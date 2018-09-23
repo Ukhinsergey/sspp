@@ -23,10 +23,13 @@ int main(int argc, char** argv) {
 				float tmp;
 				fin.read((char *) &tmp, sizeof(tmp));
 				fout << setw(w) << tmp << ' ';
-			} else {
+			} else if (type == 'd'){
 				double tmp;
 				fin.read((char *) &tmp, sizeof(tmp));
 				fout << setw(w) << tmp << ' ';
+			} else {
+				cout << "error matr" << endl;
+				return 2;
 			}
 		}
 		fout << endl;
