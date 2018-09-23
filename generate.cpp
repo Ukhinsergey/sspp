@@ -27,10 +27,10 @@ int main(int argc, char ** argv) {
 	uint64_t i, j;
 	for ( i = 0 ; i < n; ++i) {
 		for (j = 0; j < m; ++j) {
-			if ( *type = 'f') {
+			if ( *type == 'f') {
 				float temp = ((float) rand())/rand() - ((float) rand())/rand();
 				file.write((char *) &temp, sizeof(temp));
-			} else if ( *type = 'd') {
+			} else if ( *type == 'd') {
 				double temp = ((double) rand())/rand() - ((double) rand())/rand();
 				file.write((char *) &temp, sizeof(temp));
 			} else {
