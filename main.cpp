@@ -2,7 +2,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <cstdint>
-
+#include <iomanip>
 using namespace std;
 
 template <typename Atype, typename Btype, typename Ctype>
@@ -43,8 +43,8 @@ void mulmatr(fstream &a, fstream &b, fstream &c, int &r){
 		}
 	}
 
-	fstream dat;
-	dat.open("dat.dat", ios::out | ios::binary | ios::app);
+	ofstream dat;
+	dat.open("dat.txt", ios::out | ios::app);
 
 	clock_t time;
 	switch (r) {
@@ -58,7 +58,6 @@ void mulmatr(fstream &a, fstream &b, fstream &c, int &r){
 				}
 			}
 			time -= clock();
-			dat.write((char *) &time, sizeof(time));
 			break;
 		case 1 :
 			time = clock();
@@ -70,7 +69,6 @@ void mulmatr(fstream &a, fstream &b, fstream &c, int &r){
 				}
 			}
 			time -= clock();
-			dat.write((char *) &time, sizeof(time));
 			break;
 		case 2 :
 			time = clock();
@@ -82,7 +80,6 @@ void mulmatr(fstream &a, fstream &b, fstream &c, int &r){
 				}
 			}
 			time -= clock();
-			dat.write((char *) &time, sizeof(time));
 			break;
 		case 3 :
 			time = clock();
@@ -94,7 +91,6 @@ void mulmatr(fstream &a, fstream &b, fstream &c, int &r){
 				}
 			}
 			time -= clock();
-			dat.write((char *) &time, sizeof(time));
 			break;
 		case 4 :
 			time = clock();
@@ -106,7 +102,6 @@ void mulmatr(fstream &a, fstream &b, fstream &c, int &r){
 				}
 			}
 			time -= clock();
-			dat.write((char *) &time, sizeof(time));
 			break;
 		case 5 :
 			time = clock();
@@ -118,13 +113,12 @@ void mulmatr(fstream &a, fstream &b, fstream &c, int &r){
 				}
 			}
 			time -= clock();
-			dat.write((char *) &time, sizeof(time));
 			break;
 		default : 
 			cout << "error: mode" << r << endl;
 			return;
 	}
-
+	dat << r << ' ' << fixed << setprecision(6) << ((double) -time)/CLOCKS_PER_SEC << endl;
 	char type;
 	if ( sizeof(Ctype) == sizeof(double)) {
 		type = 'd';
