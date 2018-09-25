@@ -24,12 +24,13 @@ test: compare main
 	./main "./test/A.dat" "./test/B.dat" "./test/C3.dat" 3
 	./main "./test/A.dat" "./test/B.dat" "./test/C4.dat" 4
 	./main "./test/A.dat" "./test/B.dat" "./test/C5.dat" 5
-	./compare "./test/C0.dat" "./test/C1.dat"
-	./compare "./test/C0.dat" "./test/C2.dat"
-	./compare "./test/C0.dat" "./test/C3.dat"
-	./compare "./test/C0.dat" "./test/C4.dat"
-	./compare "./test/C0.dat" "./test/C5.dat"
-	rm -f ./test/C*.dat
+	./compare "./test/C0.dat" "./test/C.dat"
+	./compare "./test/C1.dat" "./test/C.dat"
+	./compare "./test/C2.dat" "./test/C.dat"
+	./compare "./test/C3.dat" "./test/C.dat"
+	./compare "./test/C4.dat" "./test/C.dat"
+	./compare "./test/C5.dat" "./test/C.dat"
+	rm -f ./test/C0.dat ./test/C1.dat ./test/C2.dat ./test/C3.dat ./test/C4.dat ./test/C5.dat
 
 report: generate main
 	rm -f dat.txt
