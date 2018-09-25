@@ -29,8 +29,67 @@ test: compare main
 	./compare "./test/C0.dat" "./test/C3.dat"
 	./compare "./test/C0.dat" "./test/C4.dat"
 	./compare "./test/C0.dat" "./test/C5.dat"
-	rm ./test/C*.dat
+	rm -f ./test/C*.dat
+
+report: generate main
+	rm -f dat.txt
+	./generate f 50 50 A.dat 
+	./generate f 50 50 B.dat
+	./main A.dat B.dat C.dat 0
+	./main A.dat B.dat C.dat 1
+	./main A.dat B.dat C.dat 2
+	./main A.dat B.dat C.dat 3
+	./main A.dat B.dat C.dat 4
+	./main A.dat B.dat C.dat 5
+	gnuplot plotset
+	mv plot.svg plot50x50.svg
+	rm -f dat.txt
+	./generate f 200 200 A.dat 
+	./generate f 200 200 B.dat
+	./main A.dat B.dat C.dat 0
+	./main A.dat B.dat C.dat 1
+	./main A.dat B.dat C.dat 2
+	./main A.dat B.dat C.dat 3
+	./main A.dat B.dat C.dat 4
+	./main A.dat B.dat C.dat 5
+	gnuplot plotset
+	mv plot.svg plot200x200.svg
+	rm -f dat.txt
+	./generate f 300 300 A.dat 
+	./generate f 300 300 B.dat
+	./main A.dat B.dat C.dat 0
+	./main A.dat B.dat C.dat 1
+	./main A.dat B.dat C.dat 2
+	./main A.dat B.dat C.dat 3
+	./main A.dat B.dat C.dat 4
+	./main A.dat B.dat C.dat 5
+	gnuplot plotset
+	mv plot.svg plot300x300.svg
+	rm -f dat.txt
+	./generate f 500 500 A.dat 
+	./generate f 500 500 B.dat
+	./main A.dat B.dat C.dat 0
+	./main A.dat B.dat C.dat 1
+	./main A.dat B.dat C.dat 2
+	./main A.dat B.dat C.dat 3
+	./main A.dat B.dat C.dat 4
+	./main A.dat B.dat C.dat 5
+	gnuplot plotset
+	mv plot.svg plot500x500.svg
+	rm -f dat.txt
+	./generate f 1000 1000 A.dat 
+	./generate f 1000 1000 B.dat
+	./main A.dat B.dat C.dat 0
+	./main A.dat B.dat C.dat 1
+	./main A.dat B.dat C.dat 2
+	./main A.dat B.dat C.dat 3
+	./main A.dat B.dat C.dat 4
+	./main A.dat B.dat C.dat 5
+	gnuplot plotset
+	mv plot.svg plot1000x1000.svg
+	rm -f dat.txt A.dat B.dat C.dat
+
 
 
 clean : 
-	rm *.dat *.txt *.o
+	rm -f *.dat *.txt *.o
