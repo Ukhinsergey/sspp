@@ -17,7 +17,7 @@ compare.o: compare.o
 print.o: print.cpp
 	g++ -c -o print.o print.cpp
 
-test: compare main
+test: compare main 
 	./main "./test/A.dat" "./test/B.dat" "./test/C0.dat" 0
 	./main "./test/A.dat" "./test/B.dat" "./test/C1.dat" 1
 	./main "./test/A.dat" "./test/B.dat" "./test/C2.dat" 2
@@ -42,6 +42,61 @@ report: generate main
 	./main A.dat B.dat C.dat 3
 	./main A.dat B.dat C.dat 4
 	./main A.dat B.dat C.dat 5
+	./main A.dat B.dat C.dat 0
+	./main A.dat B.dat C.dat 1
+	./main A.dat B.dat C.dat 2
+	./main A.dat B.dat C.dat 3
+	./main A.dat B.dat C.dat 4
+	./main A.dat B.dat C.dat 5
+	./main A.dat B.dat C.dat 0
+	./main A.dat B.dat C.dat 1
+	./main A.dat B.dat C.dat 2
+	./main A.dat B.dat C.dat 3
+	./main A.dat B.dat C.dat 4
+	./main A.dat B.dat C.dat 5
+	./main A.dat B.dat C.dat 0
+	./main A.dat B.dat C.dat 1
+	./main A.dat B.dat C.dat 2
+	./main A.dat B.dat C.dat 3
+	./main A.dat B.dat C.dat 4
+	./main A.dat B.dat C.dat 5
+	./main A.dat B.dat C.dat 0
+	./main A.dat B.dat C.dat 1
+	./main A.dat B.dat C.dat 2
+	./main A.dat B.dat C.dat 3
+	./main A.dat B.dat C.dat 4
+	./main A.dat B.dat C.dat 5
+	./main A.dat B.dat C.dat 0
+	./main A.dat B.dat C.dat 1
+	./main A.dat B.dat C.dat 2
+	./main A.dat B.dat C.dat 3
+	./main A.dat B.dat C.dat 4
+	./main A.dat B.dat C.dat 5
+	./main A.dat B.dat C.dat 0
+	./main A.dat B.dat C.dat 1
+	./main A.dat B.dat C.dat 2
+	./main A.dat B.dat C.dat 3
+	./main A.dat B.dat C.dat 4
+	./main A.dat B.dat C.dat 5
+	./main A.dat B.dat C.dat 0
+	./main A.dat B.dat C.dat 1
+	./main A.dat B.dat C.dat 2
+	./main A.dat B.dat C.dat 3
+	./main A.dat B.dat C.dat 4
+	./main A.dat B.dat C.dat 5
+	./main A.dat B.dat C.dat 0
+	./main A.dat B.dat C.dat 1
+	./main A.dat B.dat C.dat 2
+	./main A.dat B.dat C.dat 3
+	./main A.dat B.dat C.dat 4
+	./main A.dat B.dat C.dat 5
+	./main A.dat B.dat C.dat 0
+	./main A.dat B.dat C.dat 1
+	./main A.dat B.dat C.dat 2
+	./main A.dat B.dat C.dat 3
+	./main A.dat B.dat C.dat 4
+	./main A.dat B.dat C.dat 5
+	./sr
 	gnuplot plotset
 	mv plot.svg plot50x50.svg
 	rm -f dat.txt
@@ -53,6 +108,61 @@ report: generate main
 	./main A.dat B.dat C.dat 3
 	./main A.dat B.dat C.dat 4
 	./main A.dat B.dat C.dat 5
+	./main A.dat B.dat C.dat 0
+	./main A.dat B.dat C.dat 1
+	./main A.dat B.dat C.dat 2
+	./main A.dat B.dat C.dat 3
+	./main A.dat B.dat C.dat 4
+	./main A.dat B.dat C.dat 5
+	./main A.dat B.dat C.dat 0
+	./main A.dat B.dat C.dat 1
+	./main A.dat B.dat C.dat 2
+	./main A.dat B.dat C.dat 3
+	./main A.dat B.dat C.dat 4
+	./main A.dat B.dat C.dat 5
+	./main A.dat B.dat C.dat 0
+	./main A.dat B.dat C.dat 1
+	./main A.dat B.dat C.dat 2
+	./main A.dat B.dat C.dat 3
+	./main A.dat B.dat C.dat 4
+	./main A.dat B.dat C.dat 5
+	./main A.dat B.dat C.dat 0
+	./main A.dat B.dat C.dat 1
+	./main A.dat B.dat C.dat 2
+	./main A.dat B.dat C.dat 3
+	./main A.dat B.dat C.dat 4
+	./main A.dat B.dat C.dat 5
+	./main A.dat B.dat C.dat 0
+	./main A.dat B.dat C.dat 1
+	./main A.dat B.dat C.dat 2
+	./main A.dat B.dat C.dat 3
+	./main A.dat B.dat C.dat 4
+	./main A.dat B.dat C.dat 5
+	./main A.dat B.dat C.dat 0
+	./main A.dat B.dat C.dat 1
+	./main A.dat B.dat C.dat 2
+	./main A.dat B.dat C.dat 3
+	./main A.dat B.dat C.dat 4
+	./main A.dat B.dat C.dat 5
+	./main A.dat B.dat C.dat 0
+	./main A.dat B.dat C.dat 1
+	./main A.dat B.dat C.dat 2
+	./main A.dat B.dat C.dat 3
+	./main A.dat B.dat C.dat 4
+	./main A.dat B.dat C.dat 5
+	./main A.dat B.dat C.dat 0
+	./main A.dat B.dat C.dat 1
+	./main A.dat B.dat C.dat 2
+	./main A.dat B.dat C.dat 3
+	./main A.dat B.dat C.dat 4
+	./main A.dat B.dat C.dat 5
+	./main A.dat B.dat C.dat 0
+	./main A.dat B.dat C.dat 1
+	./main A.dat B.dat C.dat 2
+	./main A.dat B.dat C.dat 3
+	./main A.dat B.dat C.dat 4
+	./main A.dat B.dat C.dat 5
+	./sr
 	gnuplot plotset
 	mv plot.svg plot200x200.svg
 	rm -f dat.txt
@@ -64,6 +174,61 @@ report: generate main
 	./main A.dat B.dat C.dat 3
 	./main A.dat B.dat C.dat 4
 	./main A.dat B.dat C.dat 5
+	./main A.dat B.dat C.dat 0
+	./main A.dat B.dat C.dat 1
+	./main A.dat B.dat C.dat 2
+	./main A.dat B.dat C.dat 3
+	./main A.dat B.dat C.dat 4
+	./main A.dat B.dat C.dat 5
+	./main A.dat B.dat C.dat 0
+	./main A.dat B.dat C.dat 1
+	./main A.dat B.dat C.dat 2
+	./main A.dat B.dat C.dat 3
+	./main A.dat B.dat C.dat 4
+	./main A.dat B.dat C.dat 5
+	./main A.dat B.dat C.dat 0
+	./main A.dat B.dat C.dat 1
+	./main A.dat B.dat C.dat 2
+	./main A.dat B.dat C.dat 3
+	./main A.dat B.dat C.dat 4
+	./main A.dat B.dat C.dat 5
+	./main A.dat B.dat C.dat 0
+	./main A.dat B.dat C.dat 1
+	./main A.dat B.dat C.dat 2
+	./main A.dat B.dat C.dat 3
+	./main A.dat B.dat C.dat 4
+	./main A.dat B.dat C.dat 5
+	./main A.dat B.dat C.dat 0
+	./main A.dat B.dat C.dat 1
+	./main A.dat B.dat C.dat 2
+	./main A.dat B.dat C.dat 3
+	./main A.dat B.dat C.dat 4
+	./main A.dat B.dat C.dat 5
+	./main A.dat B.dat C.dat 0
+	./main A.dat B.dat C.dat 1
+	./main A.dat B.dat C.dat 2
+	./main A.dat B.dat C.dat 3
+	./main A.dat B.dat C.dat 4
+	./main A.dat B.dat C.dat 5
+	./main A.dat B.dat C.dat 0
+	./main A.dat B.dat C.dat 1
+	./main A.dat B.dat C.dat 2
+	./main A.dat B.dat C.dat 3
+	./main A.dat B.dat C.dat 4
+	./main A.dat B.dat C.dat 5
+	./main A.dat B.dat C.dat 0
+	./main A.dat B.dat C.dat 1
+	./main A.dat B.dat C.dat 2
+	./main A.dat B.dat C.dat 3
+	./main A.dat B.dat C.dat 4
+	./main A.dat B.dat C.dat 5
+	./main A.dat B.dat C.dat 0
+	./main A.dat B.dat C.dat 1
+	./main A.dat B.dat C.dat 2
+	./main A.dat B.dat C.dat 3
+	./main A.dat B.dat C.dat 4
+	./main A.dat B.dat C.dat 5
+	./sr
 	gnuplot plotset
 	mv plot.svg plot300x300.svg
 	rm -f dat.txt
@@ -75,6 +240,61 @@ report: generate main
 	./main A.dat B.dat C.dat 3
 	./main A.dat B.dat C.dat 4
 	./main A.dat B.dat C.dat 5
+	./main A.dat B.dat C.dat 0
+	./main A.dat B.dat C.dat 1
+	./main A.dat B.dat C.dat 2
+	./main A.dat B.dat C.dat 3
+	./main A.dat B.dat C.dat 4
+	./main A.dat B.dat C.dat 5
+	./main A.dat B.dat C.dat 0
+	./main A.dat B.dat C.dat 1
+	./main A.dat B.dat C.dat 2
+	./main A.dat B.dat C.dat 3
+	./main A.dat B.dat C.dat 4
+	./main A.dat B.dat C.dat 5
+	./main A.dat B.dat C.dat 0
+	./main A.dat B.dat C.dat 1
+	./main A.dat B.dat C.dat 2
+	./main A.dat B.dat C.dat 3
+	./main A.dat B.dat C.dat 4
+	./main A.dat B.dat C.dat 5
+	./main A.dat B.dat C.dat 0
+	./main A.dat B.dat C.dat 1
+	./main A.dat B.dat C.dat 2
+	./main A.dat B.dat C.dat 3
+	./main A.dat B.dat C.dat 4
+	./main A.dat B.dat C.dat 5
+	./main A.dat B.dat C.dat 0
+	./main A.dat B.dat C.dat 1
+	./main A.dat B.dat C.dat 2
+	./main A.dat B.dat C.dat 3
+	./main A.dat B.dat C.dat 4
+	./main A.dat B.dat C.dat 5
+	./main A.dat B.dat C.dat 0
+	./main A.dat B.dat C.dat 1
+	./main A.dat B.dat C.dat 2
+	./main A.dat B.dat C.dat 3
+	./main A.dat B.dat C.dat 4
+	./main A.dat B.dat C.dat 5
+	./main A.dat B.dat C.dat 0
+	./main A.dat B.dat C.dat 1
+	./main A.dat B.dat C.dat 2
+	./main A.dat B.dat C.dat 3
+	./main A.dat B.dat C.dat 4
+	./main A.dat B.dat C.dat 5
+	./main A.dat B.dat C.dat 0
+	./main A.dat B.dat C.dat 1
+	./main A.dat B.dat C.dat 2
+	./main A.dat B.dat C.dat 3
+	./main A.dat B.dat C.dat 4
+	./main A.dat B.dat C.dat 5
+	./main A.dat B.dat C.dat 0
+	./main A.dat B.dat C.dat 1
+	./main A.dat B.dat C.dat 2
+	./main A.dat B.dat C.dat 3
+	./main A.dat B.dat C.dat 4
+	./main A.dat B.dat C.dat 5
+	./sr
 	gnuplot plotset
 	mv plot.svg plot500x500.svg
 	rm -f dat.txt
@@ -86,6 +306,61 @@ report: generate main
 	./main A.dat B.dat C.dat 3
 	./main A.dat B.dat C.dat 4
 	./main A.dat B.dat C.dat 5
+	./main A.dat B.dat C.dat 0
+	./main A.dat B.dat C.dat 1
+	./main A.dat B.dat C.dat 2
+	./main A.dat B.dat C.dat 3
+	./main A.dat B.dat C.dat 4
+	./main A.dat B.dat C.dat 5
+	./main A.dat B.dat C.dat 0
+	./main A.dat B.dat C.dat 1
+	./main A.dat B.dat C.dat 2
+	./main A.dat B.dat C.dat 3
+	./main A.dat B.dat C.dat 4
+	./main A.dat B.dat C.dat 5
+	./main A.dat B.dat C.dat 0
+	./main A.dat B.dat C.dat 1
+	./main A.dat B.dat C.dat 2
+	./main A.dat B.dat C.dat 3
+	./main A.dat B.dat C.dat 4
+	./main A.dat B.dat C.dat 5
+	./main A.dat B.dat C.dat 0
+	./main A.dat B.dat C.dat 1
+	./main A.dat B.dat C.dat 2
+	./main A.dat B.dat C.dat 3
+	./main A.dat B.dat C.dat 4
+	./main A.dat B.dat C.dat 5
+	./main A.dat B.dat C.dat 0
+	./main A.dat B.dat C.dat 1
+	./main A.dat B.dat C.dat 2
+	./main A.dat B.dat C.dat 3
+	./main A.dat B.dat C.dat 4
+	./main A.dat B.dat C.dat 5
+	./main A.dat B.dat C.dat 0
+	./main A.dat B.dat C.dat 1
+	./main A.dat B.dat C.dat 2
+	./main A.dat B.dat C.dat 3
+	./main A.dat B.dat C.dat 4
+	./main A.dat B.dat C.dat 5
+	./main A.dat B.dat C.dat 0
+	./main A.dat B.dat C.dat 1
+	./main A.dat B.dat C.dat 2
+	./main A.dat B.dat C.dat 3
+	./main A.dat B.dat C.dat 4
+	./main A.dat B.dat C.dat 5
+	./main A.dat B.dat C.dat 0
+	./main A.dat B.dat C.dat 1
+	./main A.dat B.dat C.dat 2
+	./main A.dat B.dat C.dat 3
+	./main A.dat B.dat C.dat 4
+	./main A.dat B.dat C.dat 5
+	./main A.dat B.dat C.dat 0
+	./main A.dat B.dat C.dat 1
+	./main A.dat B.dat C.dat 2
+	./main A.dat B.dat C.dat 3
+	./main A.dat B.dat C.dat 4
+	./main A.dat B.dat C.dat 5
+	./sr
 	gnuplot plotset
 	mv plot.svg plot1000x1000.svg
 	rm -f dat.txt A.dat B.dat C.dat
@@ -93,4 +368,4 @@ report: generate main
 
 
 clean : 
-	rm -f *.dat *.txt *.o
+	rm -f *.dat *.txt *.o *.svg
