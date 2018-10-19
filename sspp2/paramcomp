@@ -1,0 +1,2 @@
+gcc -I/usr/local/include main.cpp /usr/local/lib/libpapi.a
+sudo sh -c 'echo 1 >/proc/sys/kernel/perf_event_paranoid'
