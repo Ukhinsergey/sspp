@@ -1,4 +1,4 @@
-.PHONY: test
+.PHONY: test plot
 
 
 main: main.o 
@@ -29,12 +29,16 @@ test: compare main
 	./compare "./test/C2.dat" "./test/C.dat"
 	rm -f ./test/C0.dat ./test/C1.dat ./test/C2.dat
 
-report: generate main 
-	./generate f 5000 5000 A.dat 
-	./generate f 5000 5000 B.dat
+
+report: generate main
+	./generate f 1000 1000 A.dat
+	./generate f 1000 1000 B.dat
 	./main A.dat B.dat C.dat 0
 	./main A.dat B.dat C.dat 1
 	./main A.dat B.dat C.dat 2
+
+plot :
+	gnuplot plotset
 	
 
 

@@ -1,7 +1,20 @@
-set xlabel 'Mode'                             
-set ylabel 'Time' 
 set terminal svg size 600,500
-set output 'plot.svg'
-set title ""
-set xtics("ijk" 0, "ikj" 1, "kij" 2, "jik" 3, "jki" 4, "kji" 5)
-plot "dat.txt" with lines
+set output 'time.svg'
+set title "time"
+plot './plot/datplot.txt' using 1:2 with linespoints title '32ijk', './plot/datplot.txt' using 1:3 with linespoints title '32ikj', './plot/datplot.txt' using 1:4 with linespoints title '52ikj'
+
+set output 'ins.svg'
+set title "ins"
+plot './plot/insplot.txt' using 1:2 with linespoints title '32ijk', './plot/insplot.txt' using 1:3 with linespoints title '32ikj', './plot/insplot.txt' using 1:4 with linespoints title '52ikj'
+
+set output 'l1.svg'
+set title "l1"
+plot './plot/l1plot.txt' using 1:2 with linespoints title '32ijk', './plot/l1plot.txt' using 1:3 with linespoints title '32ikj', './plot/l1plot.txt' using 1:4 with linespoints title '52ikj'
+
+set output 'l2.svg'
+set title "l2"
+plot './plot/l2plot.txt' using 1:2 with linespoints title '32ijk', './plot/l2plot.txt' using 1:3 with linespoints title '32ikj', './plot/l2plot.txt' using 1:4 with linespoints title '52ikj'
+
+set output 'tlb.svg'
+set title "tlb"
+plot './plot/tlbplot.txt' using 1:2 with linespoints title '32ijk', './plot/tlbplot.txt' using 1:3 with linespoints title '32ikj', './plot/tlbplot.txt' using 1:4 with linespoints title '52ikj'

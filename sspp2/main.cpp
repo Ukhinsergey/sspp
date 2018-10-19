@@ -147,11 +147,11 @@ void mulmatr(fstream &a, fstream &b, fstream &c, int r){
 			cout << "error: mode" << r << endl;
 			return;
 	}
-	dat << r << ' ' << fixed << setprecision(6) << ((double) -time)/CLOCKS_PER_SEC << ' ' << endl;
-	ins << r << ' ' << values[0] << endl;
-	l1 << r  << ' ' << values[1] << endl;
-	l2 << r  << ' ' << values[2] << endl;
-	tlb << r  << ' ' << values[3] << endl; 
+	dat << n << ' ' << r << ' ' << fixed << setprecision(6) << ((double) -time)/CLOCKS_PER_SEC << ' ' << endl;
+	ins << n << ' ' << r << ' ' << values[0] << endl;
+	l1 << n << ' ' << r  << ' ' << values[1] << endl;
+	l2 << n << ' ' << r  << ' ' << values[2] << endl;
+	tlb << n << ' ' << r  << ' ' << values[3] << endl; 
 
 	
 	char type ='f';
