@@ -1,24 +1,15 @@
 .PHONY: test plot
 
 
-main: main.o 
-	g++ -o main -I/usr/local/include main.o /usr/local/lib/libpapi.a
-generate: generate.o
-	g++ -o generate generate.o
-compare: compare.o
-	g++ -o compare compare.o
-print: print.o
-	g++ -o print print.o
+main: main.cpp 
+	g++ -std=c++11 -o main -I/usr/local/include main.cpp /usr/local/lib/libpapi.a
+generate: generate.cpp
+	g++ -std=c++11 -o generate generate.cpp
+compare: compare.cpp
+	g++ -std=c++11 -o compare compare.cpp
+print: print.cpp
+	g++ -std=c++11 -o print print.cpp
 
-generate.o: generate.cpp
-	g++ -c -o generate.o generate.cpp
-main.o: main.cpp
-	g++ -c -o main.o main.cpp 
-
-compare.o: compare.cpp
-	g++ -c -o compare.o compare.cpp
-print.o: print.cpp
-	g++ -c -o print.o print.cpp
 
 test: compare main 
 	./main "./test/A.dat" "./test/B.dat" "./test/C0.dat" 0
@@ -31,12 +22,40 @@ test: compare main
 
 
 report: generate main
+	for number in 1000 2000 3000 4000 5000; do \
+	./generate f $$number $$number A.dat ;\
+	./generate f $$number $$number B.dat ;\
+	./main A.dat B.dat C.dat 0 ;\
+	./main A.dat B.dat C.dat 1 ;\
+	./main A.dat B.dat C.dat 2 ;\
+	done
+
+easdsad: 
 	./generate f 1000 1000 A.dat
 	./generate f 1000 1000 B.dat
 	./main A.dat B.dat C.dat 0
 	./main A.dat B.dat C.dat 1
 	./main A.dat B.dat C.dat 2
-
+	./generate f 2000 2000 A.dat
+	./generate f 2000 2000 B.dat
+	./main A.dat B.dat C.dat 0
+	./main A.dat B.dat C.dat 1
+	./main A.dat B.dat C.dat 2
+	./generate f 3000 2000 A.dat
+	./generate f 2000 2000 B.dat
+	./main A.dat B.dat C.dat 0
+	./main A.dat B.dat C.dat 1
+	./main A.dat B.dat C.dat 2
+	./generate f 2000 2000 A.dat
+	./generate f 2000 2000 B.dat
+	./main A.dat B.dat C.dat 0
+	./main A.dat B.dat C.dat 1
+	./main A.dat B.dat C.dat 2
+	./generate f 2000 2000 A.dat
+	./generate f 2000 2000 B.dat
+	./main A.dat B.dat C.dat 0
+	./main A.dat B.dat C.dat 1
+	./main A.dat B.dat C.dat 2
 plot :
 	gnuplot plotset
 	

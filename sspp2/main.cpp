@@ -5,11 +5,11 @@
 #include <iomanip>
 #include <papi.h>
 
-const size_t EVENT_COUNT = 4;
-int events[] = {PAPI_TOT_INS, PAPI_L1_DCM, PAPI_L2_DCM, PAPI_TLB_DM};
+const size_t EVENT_COUNT = 3;
+int events[] = {PAPI_TOT_CYC, PAPI_L1_DCM, PAPI_L2_DCM};//{PAPI_TOT_INS, PAPI_L1_DCM, PAPI_L2_DCM, PAPI_TLB_DM};
 long long values[EVENT_COUNT];
 uint64_t blocksize = 32;
-uint64_t myblock = 52;//myblock = sqrt(ml/3);
+uint64_t myblock = 72;//myblock = sqrt(ml/3);
 using namespace std;
 
 
@@ -151,7 +151,12 @@ void mulmatr(fstream &a, fstream &b, fstream &c, int r){
 	ins << n << ' ' << r << ' ' << values[0] << endl;
 	l1 << n << ' ' << r  << ' ' << values[1] << endl;
 	l2 << n << ' ' << r  << ' ' << values[2] << endl;
-	tlb << n << ' ' << r  << ' ' << values[3] << endl; 
+	//tlb << n << ' ' << r  << ' ' << values[3] << endl; */ l1<< n << ' ' << r  << ' ' << values[0] << endl; l2<< n << ' ' << r  << ' ' << values[1] << endl;
+	dat.close();
+	ins.close();
+	l1.close();
+	l2.close();
+	tlb.close();
 
 	
 	char type ='f';
