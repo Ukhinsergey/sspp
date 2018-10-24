@@ -1,7 +1,7 @@
 set terminal svg size 600,500
 set output 'time.svg'
 set title "time"
-plot './plot/datplot.txt' using 1:2 with linespoints title '32ijk', './plot/datplot.txt' using 1:3 with linespoints title '32ikj', './plot/datplot.txt' using 1:4 with linespoints title '52ikj'
+plot './plot/timeplot.txt' using 1:2 with linespoints title '32ijk', './plot/timeplot.txt' using 1:3 with linespoints title '32ikj', './plot/timeplot.txt' using 1:4 with linespoints title '52ikj'
 
 set output 'ins.svg'
 set title "ins"
@@ -15,6 +15,6 @@ set output 'l2.svg'
 set title "l2"
 plot './plot/l2plot.txt' using 1:2 with linespoints title '32ijk', './plot/l2plot.txt' using 1:3 with linespoints title '32ikj', './plot/l2plot.txt' using 1:4 with linespoints title '52ikj'
 
-set output 'tlb.svg'
-set title "tlb"
-plot './plot/tlbplot.txt' using 1:2 with linespoints title '32ijk', './plot/tlbplot.txt' using 1:3 with linespoints title '32ikj', './plot/tlbplot.txt' using 1:4 with linespoints title '52ikj'
+set output 'flops.svg'
+set title "flops"
+plot './plot/flopsplot.txt' using 1:2 with linespoints title '32ijk', './plot/flopsplot.txt' using 1:3 with linespoints title '32ikj', './plot/flopsplot.txt' using 1:4 with linespoints title '52ikj'

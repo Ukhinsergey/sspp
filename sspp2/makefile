@@ -2,15 +2,17 @@
 
 
 main: main.cpp 
-	g++ -std=c++11 -o main -I/usr/local/include main.cpp /usr/local/lib/libpapi.a
+	g++ -std=c++11 -o main -I/usr/local/include main.cpp -lpapi
 generate: generate.cpp
 	g++ -std=c++11 -o generate generate.cpp
 compare: compare.cpp
 	g++ -std=c++11 -o compare compare.cpp
 print: print.cpp
 	g++ -std=c++11 -o print print.cpp
+main1: main1.cpp
+	g++ -std=c++11 -o main1 -I/usr/local/include main1.cpp -lpapi
 
-
+	
 test: compare main 
 	./main "./test/A.dat" "./test/B.dat" "./test/C0.dat" 0
 	./main "./test/A.dat" "./test/B.dat" "./test/C1.dat" 1

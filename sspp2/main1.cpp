@@ -5,9 +5,10 @@
 #include <iomanip>
 #include <papi.h>
 
-const size_t EVENT_COUNT = 3;
-int events[] = {PAPI_TOT_CYC, PAPI_L1_DCM, PAPI_L2_DCM};//{PAPI_TOT_INS, PAPI_L1_DCM, PAPI_L2_DCM, PAPI_TLB_DM};
-long long values[EVENT_COUNT];
+float ptime;
+float rtime;
+long long flpops;
+float mflops;
 uint64_t blocksize = 32;
 uint64_t myblock = 72;//myblock = sqrt(ml/3);
 using namespace std;
@@ -51,20 +52,16 @@ void mulmatr(fstream &a, fstream &b, fstream &c, int r){
 		}
 	}
 
-	ofstream dat, ins, l1, l2, tlb;
-	dat.open("dat.txt", ios::out | ios::app);
-	ins.open("ins.txt", ios::out | ios::app);
-	l1.open("l1.txt", ios::out | ios::app);
-	l2.open("l2.txt", ios::out | ios::app);
-	tlb.open("tlb.txt", ios::out | ios::app);
+	ofstream time, flops;
+	time.open("time.txt", ios::out | ios::app);
+	flops.open("flops.txt", ios::out | ios::app);
+	//tlb.open("tlb.txt", ios::out | ios::app);
 	n = na;
 	uint64_t i1, j1, k1;
-	clock_t time;
 	switch (r) {
 		case 0:
-			time = clock();
-			if (int retval = PAPI_start_counters(events, EVENT_COUNT) != PAPI_OK) {
-				cout << "error papi start" << endl;
+			if (PAPI_OK != PAPI_flops(&rtime, &ptime, &flpops, &mflops)) {
+				cout << "error papi start flops" << endl;
 				exit(1);
 			}
 			for(i = 0 ; i < n; i+=blocksize) {
@@ -75,7 +72,7 @@ void mulmatr(fstream &a, fstream &b, fstream &c, int r){
 						uint64_t jmin = min(n, j + blocksize);
 						uint64_t kmin = min(n, k + blocksize);
 						for(i1 = i; i1 < imin; ++i1) {
-							for (j1 = j; j1 < jmin; ++j1) {
+							for (j1 = j; j1 < jmin ; ++j1) {
 								for (k1 = k; k1 < kmin; ++k1) {
 									matrc[i1][j1] += matra[i1][k1] * matrb[k1][j1];
 								}
@@ -84,16 +81,14 @@ void mulmatr(fstream &a, fstream &b, fstream &c, int r){
 					}
 				}
 			}
-			if (int retval = PAPI_stop_counters(values, EVENT_COUNT) != PAPI_OK) {
-				cout << "error papi stop" << endl;
+			if (PAPI_OK != PAPI_flops(&rtime, &ptime, &flpops, &mflops)) {
+				cout << "error papi stop flops" << endl;
 				exit(1);
 			}
-			time -= clock();
 			break;
 
 		case 1:
-			time = clock();
-			if (int retval = PAPI_start_counters(events, EVENT_COUNT) != PAPI_OK) {
+			if (PAPI_OK != PAPI_flops(&rtime, &ptime, &flpops, &mflops)) {
 				cout << "error papi start" << endl;
 				exit(1);
 			}
@@ -115,25 +110,23 @@ void mulmatr(fstream &a, fstream &b, fstream &c, int r){
 				}
 			}
 
-			if (int retval = PAPI_stop_counters(values, EVENT_COUNT) != PAPI_OK) {
+			if (PAPI_OK != PAPI_flops(&rtime, &ptime, &flpops, &mflops)) {
 				cout << "error papi stop" << endl;
 				exit(1);
 			}
-			time -= clock();
 			break;
 
 		case 2:
 			blocksize = myblock;
-			time = clock();
-			if (int retval = PAPI_start_counters(events, EVENT_COUNT) != PAPI_OK) {
+			if (PAPI_OK != PAPI_flops(&rtime, &ptime, &flpops, &mflops)) {
 				cout << "error papi start" << endl;
 				exit(1);
 			}
 			for(i = 0 ; i < n; i+=blocksize) {
 				for( j = 0 ; j < n; j+=blocksize) {
-					for ( k = 0; k < n; k+=blocksize) {	
+					for ( k = 0; k < n; k+=blocksize) {
 							//block mul
-						int64_t imin = min(n, i + blocksize);
+						uint64_t imin = min(n, i + blocksize);
 						uint64_t jmin = min(n, j + blocksize);
 						uint64_t kmin = min(n, k + blocksize);
 						for(i1 = i; i1 < imin; ++i1) {
@@ -146,27 +139,19 @@ void mulmatr(fstream &a, fstream &b, fstream &c, int r){
 					}
 				}
 			}
-			if (int retval = PAPI_stop_counters(values, EVENT_COUNT) != PAPI_OK) {
+			if (PAPI_OK != PAPI_flops(&rtime, &ptime, &flpops, &mflops)) {
 				cout << "error papi stop" << endl;
 				exit(1);
 			}
-			time -= clock();
 			break;
 		default : 
 			cout << "error: mode" << r << endl;
 			return;
 	}
-	dat << n << ' ' << r << ' ' << fixed << setprecision(6) << ((double) -time)/CLOCKS_PER_SEC << ' ' << endl;
-	ins << n << ' ' << r << ' ' << values[0] << endl;
-	l1 << n << ' ' << r  << ' ' << values[1] << endl;
-	l2 << n << ' ' << r  << ' ' << values[2] << endl;
-	//tlb << n << ' ' << r  << ' ' << values[3] << endl; */ l1<< n << ' ' << r  << ' ' << values[0] << endl; l2<< n << ' ' << r  << ' ' << values[1] << endl;
-	dat.close();
-	ins.close();
-	l1.close();
-	l2.close();
-	tlb.close();
-
+	
+	//tlb << r  << ' ' << values[3] << endl; 
+	time << n << ' ' << r << ' ' << ptime << endl;
+	flops << n << ' ' << r << ' ' << flpops << endl;
 	
 	char type ='f';
 
