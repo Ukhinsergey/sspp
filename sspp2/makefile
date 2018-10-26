@@ -14,9 +14,12 @@ main1: main1.cpp
 
 	
 test: compare main 
-	./main "./test/A.dat" "./test/B.dat" "./test/C0.dat" 0
-	./main "./test/A.dat" "./test/B.dat" "./test/C1.dat" 1
-	./main "./test/A.dat" "./test/B.dat" "./test/C2.dat" 2
+	./main "./test/A.dat" "./test/B.dat" "./test/C0.dat" 0 0
+	./main "./test/A.dat" "./test/B.dat" "./test/C1.dat" 1 0
+	./main "./test/A.dat" "./test/B.dat" "./test/C2.dat" 2 0
+	./main "./test/A.dat" "./test/B.dat" "./test/C0.dat" 0 1
+	./main "./test/A.dat" "./test/B.dat" "./test/C1.dat" 1 1
+	./main "./test/A.dat" "./test/B.dat" "./test/C2.dat" 2 1
 	./compare "./test/C0.dat" "./test/C.dat"
 	./compare "./test/C1.dat" "./test/C.dat"
 	./compare "./test/C2.dat" "./test/C.dat"

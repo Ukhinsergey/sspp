@@ -8,12 +8,20 @@
 const size_t EVENT_COUNT = 3;
 int events[] = {PAPI_TOT_CYC, PAPI_L1_DCM, PAPI_L2_DCM};//{PAPI_TOT_INS, PAPI_L1_DCM, PAPI_L2_DCM, PAPI_TLB_DM};
 long long values[EVENT_COUNT];
+
+
+float ptime;
+float rtime;
+long long flpops;
+float mflops;
+
+
 uint64_t blocksize = 32;
 uint64_t myblock = 72;//myblock = sqrt(ml/3);
 using namespace std;
 
 
-void mulmatr(fstream &a, fstream &b, fstream &c, int r){
+void mulmatr(fstream &a, fstream &b, fstream &c, int r, int m){
 	uint64_t na, ma, nb, mb, i, j, k;
 	uint64_t  n;
 	a.read((char *) &na, sizeof(na));
@@ -51,22 +59,28 @@ void mulmatr(fstream &a, fstream &b, fstream &c, int r){
 		}
 	}
 
-	ofstream dat, ins, l1, l2, tlb;
-	dat.open("dat.txt", ios::out | ios::app);
+	ofstream ins, l1, l2, time, flops;
 	ins.open("ins.txt", ios::out | ios::app);
 	l1.open("l1.txt", ios::out | ios::app);
 	l2.open("l2.txt", ios::out | ios::app);
-	tlb.open("tlb.txt", ios::out | ios::app);
+	time.open("time.txt", ios::out | ios::app);
+	flops.open("flops.txt", ios::out | ios::app);
 	n = na;
 	uint64_t i1, j1, k1;
-	clock_t time;
 	switch (r) {
 		case 0:
-			time = clock();
-			if (int retval = PAPI_start_counters(events, EVENT_COUNT) != PAPI_OK) {
-				cout << "error papi start" << endl;
-				exit(1);
+			if (m == 0) {
+				if (int retval = PAPI_start_counters(events, EVENT_COUNT) != PAPI_OK) {
+					cout << "error papi start" << endl;
+					exit(1);
+				}
+			} else {
+				if (PAPI_OK != PAPI_flops(&rtime, &ptime, &flpops, &mflops)) {
+					cout << "error papi start flops" << endl;
+					exit(1);
+				}
 			}
+			
 			for(i = 0 ; i < n; i+=blocksize) {
 				for( j = 0 ; j < n; j+=blocksize) {
 					for ( k = 0; k < n; k+=blocksize) {
@@ -84,18 +98,30 @@ void mulmatr(fstream &a, fstream &b, fstream &c, int r){
 					}
 				}
 			}
-			if (int retval = PAPI_stop_counters(values, EVENT_COUNT) != PAPI_OK) {
-				cout << "error papi stop" << endl;
-				exit(1);
+			if (m == 0) {
+				if (int retval = PAPI_stop_counters(values, EVENT_COUNT) != PAPI_OK) {
+					cout << "error papi start" << endl;
+					exit(1);
+				}
+			} else {
+				if (PAPI_OK != PAPI_flops(&rtime, &ptime, &flpops, &mflops)) {
+					cout << "error papi start flops" << endl;
+					exit(1);
+				}
 			}
-			time -= clock();
 			break;
 
 		case 1:
-			time = clock();
-			if (int retval = PAPI_start_counters(events, EVENT_COUNT) != PAPI_OK) {
-				cout << "error papi start" << endl;
-				exit(1);
+			if (m == 0) {
+				if (int retval = PAPI_start_counters(events, EVENT_COUNT) != PAPI_OK) {
+					cout << "error papi start" << endl;
+					exit(1);
+				}
+			} else {
+				if (PAPI_OK != PAPI_flops(&rtime, &ptime, &flpops, &mflops)) {
+					cout << "error papi start flops" << endl;
+					exit(1);
+				}
 			}
 			for(i = 0 ; i < n; i+=blocksize) {
 				for( j = 0 ; j < n; j+=blocksize) {
@@ -115,19 +141,31 @@ void mulmatr(fstream &a, fstream &b, fstream &c, int r){
 				}
 			}
 
-			if (int retval = PAPI_stop_counters(values, EVENT_COUNT) != PAPI_OK) {
-				cout << "error papi stop" << endl;
-				exit(1);
+			if (m == 0) {
+				if (int retval = PAPI_stop_counters(values, EVENT_COUNT) != PAPI_OK) {
+					cout << "error papi start" << endl;
+					exit(1);
+				}
+			} else {
+				if (PAPI_OK != PAPI_flops(&rtime, &ptime, &flpops, &mflops)) {
+					cout << "error papi start flops" << endl;
+					exit(1);
+				}
 			}
-			time -= clock();
 			break;
 
 		case 2:
 			blocksize = myblock;
-			time = clock();
-			if (int retval = PAPI_start_counters(events, EVENT_COUNT) != PAPI_OK) {
-				cout << "error papi start" << endl;
-				exit(1);
+			if (m == 0) {
+				if (int retval = PAPI_start_counters(events, EVENT_COUNT) != PAPI_OK) {
+					cout << "error papi start" << endl;
+					exit(1);
+				}
+			} else {
+				if (PAPI_OK != PAPI_flops(&rtime, &ptime, &flpops, &mflops)) {
+					cout << "error papi start flops" << endl;
+					exit(1);
+				}
 			}
 			for(i = 0 ; i < n; i+=blocksize) {
 				for( j = 0 ; j < n; j+=blocksize) {
@@ -146,26 +184,36 @@ void mulmatr(fstream &a, fstream &b, fstream &c, int r){
 					}
 				}
 			}
-			if (int retval = PAPI_stop_counters(values, EVENT_COUNT) != PAPI_OK) {
-				cout << "error papi stop" << endl;
-				exit(1);
+			if (m == 0) {
+				if (int retval = PAPI_stop_counters(values, EVENT_COUNT) != PAPI_OK) {
+					cout << "error papi start" << endl;
+					exit(1);
+				}
+			} else {
+				if (PAPI_OK != PAPI_flops(&rtime, &ptime, &flpops, &mflops)) {
+					cout << "error papi start flops" << endl;
+					exit(1);
+				}
 			}
-			time -= clock();
 			break;
 		default : 
 			cout << "error: mode" << r << endl;
 			return;
 	}
-	dat << n << ' ' << r << ' ' << fixed << setprecision(6) << ((double) -time)/CLOCKS_PER_SEC << ' ' << endl;
-	ins << n << ' ' << r << ' ' << values[0] << endl;
-	l1 << n << ' ' << r  << ' ' << values[1] << endl;
-	l2 << n << ' ' << r  << ' ' << values[2] << endl;
-	//tlb << n << ' ' << r  << ' ' << values[3] << endl; */ l1<< n << ' ' << r  << ' ' << values[0] << endl; l2<< n << ' ' << r  << ' ' << values[1] << endl;
-	dat.close();
+	if ( m == 0) {
+		ins << n << ' ' << r << ' ' << values[0] << endl;
+		l1 << n << ' ' << r  << ' ' << values[1] << endl;
+		l2 << n << ' ' << r  << ' ' << values[2] << endl;
+	} else {
+		time << n << ' ' << r << ' ' << ptime << endl;
+		flops << n << ' ' << r << ' ' << flpops << endl;
+	}
+	
 	ins.close();
 	l1.close();
 	l2.close();
-	tlb.close();
+	time.close();
+	flops.close();
 
 	
 	char type ='f';
@@ -195,8 +243,8 @@ void mulmatr(fstream &a, fstream &b, fstream &c, int r){
 int main(int argc, char **argv) {
 	//ijk == 0 , ikj == 1 
 	
-	if (argc != 5) {
-		cout << "format: A.dat B.dat input.dat  r( 0/1/2 )" << endl;
+	if (argc != 6) {
+		cout << "format: A.dat B.dat input.dat  r( 0/1/2 ) m(0/1)" << endl;
 		return 0;
 	}
 
@@ -208,9 +256,11 @@ int main(int argc, char **argv) {
 	c.open(argv[3], ios::out | ios::binary);
 	int r;
 	sscanf(argv[4], "%d", &r);
+	int m;
+	sscanf(argv[5], "%d", &m);
 	a.read(&ta, sizeof(ta));
 	b.read(&tb, sizeof(tb));
-	mulmatr(a, b, c, r);
+	mulmatr(a, b, c, r, m);
 	a.close();
 	b.close();
 	c.close();
