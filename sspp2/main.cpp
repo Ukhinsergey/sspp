@@ -81,9 +81,9 @@ void mulmatr(fstream &a, fstream &b, fstream &c, int r, int m){
 				}
 			}
 			
-			for(i = 0 ; i < n; i+=blocksize) {
-				for( j = 0 ; j < n; j+=blocksize) {
-					for ( k = 0; k < n; k+=blocksize) {
+			for(i = 0 ; i < na; i+=blocksize) {
+				for( j = 0 ; j < mb; j+=blocksize) {
+					for ( k = 0; k < ma; k+=blocksize) {
 						//block mul
 						uint64_t imin = min(n, i + blocksize);
 						uint64_t jmin = min(n, j + blocksize);
@@ -123,9 +123,9 @@ void mulmatr(fstream &a, fstream &b, fstream &c, int r, int m){
 					exit(1);
 				}
 			}
-			for(i = 0 ; i < n; i+=blocksize) {
-				for( j = 0 ; j < n; j+=blocksize) {
-					for ( k = 0; k < n; k+=blocksize) {
+			for(i = 0 ; i < na; i+=blocksize) {
+				for( j = 0 ; j < mb; j+=blocksize) {
+					for ( k = 0; k < ma; k+=blocksize) {
 						//block mul
 						uint64_t imin = min(n, i + blocksize);
 						uint64_t jmin = min(n, j + blocksize);
@@ -167,9 +167,9 @@ void mulmatr(fstream &a, fstream &b, fstream &c, int r, int m){
 					exit(1);
 				}
 			}
-			for(i = 0 ; i < n; i+=blocksize) {
-				for( j = 0 ; j < n; j+=blocksize) {
-					for ( k = 0; k < n; k+=blocksize) {	
+			for(i = 0 ; i < na; i+=blocksize) {
+				for( j = 0 ; j < mb; j+=blocksize) {
+					for ( k = 0; k < ma; k+=blocksize) {	
 							//block mul
 						int64_t imin = min(n, i + blocksize);
 						uint64_t jmin = min(n, j + blocksize);
