@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <vector>
 #include <fstream>
-
+#include <omp.h>
 
 using namespace std;
 
@@ -61,27 +61,30 @@ int main(int argc, char **argv)
     } else {
         std::vector<long long > simple;
         long long  count = 0;
+        long long  countfin = 0;
         std::vector<double> time;
         int k = 0;
-        for (k = 1; k < size; ++k) {
-            while(1) {
-                long long  tmp ;
+        while(1) {
+            long long  tmp ;
                 
-                MPI_Recv(&tmp, 1, MPI_LONG_LONG,k, tagdata, MPI_COMM_WORLD, &status);
-                if (tmp != -1) {
-                    simple.push_back(tmp);
-                    count++;
-                } else  {
-                    double tmptime;
-                    MPI_Recv(&tmptime, 1, MPI_DOUBLE ,k, tagtime, MPI_COMM_WORLD, &status);
-                    time.push_back(tmptime);
+            MPI_Recv(&tmp, 1, MPI_LONG_LONG, MPI_ANY_SOURCE, tagdata, MPI_COMM_WORLD, &status);
+            if (tmp != -1) {
+                simple.push_back(tmp);
+                count++;
+            } else  {
+                double tmptime;
+                MPI_Recv(&tmptime, 1, MPI_DOUBLE ,MPI_ANY_SOURCE, tagtime, MPI_COMM_WORLD, &status);
+                time.push_back(tmptime);
+                countfin++;
+                if ( countfin == (size - 1)) {
                     break;
                 }
             }
         }
+        
         ofstream out;
         out.open(argv[3]);
-        for(temp = 2; temp * temp <= end; ++temp) {
+        for(temp = begin; temp * temp <= end; ++temp) {
             if (prime[temp]) {
                 simple.push_back(temp);
                 count++;
