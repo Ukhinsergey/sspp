@@ -10,7 +10,6 @@ int main(int argc, char **argv)
 {   
 
     double time_start, time_finish;
-    time_start = MPI_Wtime();
     long long  begin, end;
     int tagdata = 1;
     int tagtime = 2;
@@ -36,6 +35,8 @@ int main(int argc, char **argv)
     long long  iend = rank * (end - max(begin,temp) + 1) / (size - 1) + max(begin,temp) - 1;  
     //cout << rank << ' ' << ibegin << ' ' << iend << endl;
     if (rank != 0) {
+
+        time_start = MPI_Wtime();
         for(long long  j = 2; j * j <= end; ++j) {
             if(prime[j]) {
                 for(long long  i = (ibegin/j + 1 * (ibegin % j != 0)) * j; i <= min(iend, end); i += j) {
@@ -47,8 +48,12 @@ int main(int argc, char **argv)
         /*for(long long  i = ibegin; i <= min(iend,end); ++i) {
             cout << rank << ' ' << i << ' ' << prime[i] << endl;
         }*/
-
-        int i = -1;
+        for(long long  i = ibegin; i <= min(iend, end); ++i) {
+            if (prime[i]) {   
+                MPI_Send(&i, 1 , MPI_LONG_LONG, 0, tagdata, MPI_COMM_WORLD);
+            }
+        }
+        long long int i = -1;
         MPI_Send(&i, 1, MPI_LONG_LONG, 0, tagdata, MPI_COMM_WORLD);
         time_finish = MPI_Wtime();
         double time = time_finish - time_start;
@@ -58,42 +63,38 @@ int main(int argc, char **argv)
         long long  count = 0;
         std::vector<double> time;
         int k = 0;
-       
-        for(temp = 2; temp * temp <= end; ++temp) {
-            if (prime[temp]) {
-                for(long long  j = temp * temp; j * j <= end; j += temp ) {
-                    prime[j] = false;
-                }
-            }
-
-        }
         for (k = 1; k < size; ++k) {
-             {
-                long long  tmp;
-                MPI_Recv(&temp, 1, MPI_LONG_LONG,k, tagdata, MPI_COMM_WORLD, &status);
+            while(1) {
+                long long  tmp ;
+                
+                MPI_Recv(&tmp, 1, MPI_LONG_LONG,k, tagdata, MPI_COMM_WORLD, &status);
                 if (tmp != -1) {
                     simple.push_back(tmp);
                     count++;
-                } else {
+                } else  {
                     double tmptime;
-                    MPI_Recv(&tmptime, 1, MPI_DOUBLE ,k, tagdata, MPI_COMM_WORLD, &status);
+                    MPI_Recv(&tmptime, 1, MPI_DOUBLE ,k, tagtime, MPI_COMM_WORLD, &status);
                     time.push_back(tmptime);
                     break;
                 }
             }
         }
         ofstream out;
-        for(long long  i = ibegin; i <= min(iend, end); ++i) {
-            out << simple[i] << ' ';
-            count++;
-        }
         out.open(argv[3]);
+        for(temp = 2; temp * temp <= end; ++temp) {
+            if (prime[temp]) {
+                simple.push_back(temp);
+                count++;
+            }
+
+        }
+
+        cout << count << endl;
         for(long long i = 0; i < count; ++i) {
             out << simple[i] << ' ';
         }
-        cout << count << endl;
         for (k = 1; k < size ; ++k) {
-           // cout << time[k-1] << ' ' ;
+            cout << time[k-1] << ' ' ;
         }
         
     }
