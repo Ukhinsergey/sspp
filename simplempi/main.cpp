@@ -2,12 +2,17 @@
 #include <stdio.h>
 #include <vector>
 #include <fstream>
-#include <omp.h>
+#include <iostream>
+
 
 using namespace std;
 
 int main(int argc, char **argv)
 {   
+    int rank, size;
+    MPI_Init(&argc, &argv);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
 
     double time_start, time_finish;
     long long  begin, end;
@@ -16,13 +21,10 @@ int main(int argc, char **argv)
     sscanf(argv[1], "%llu", &begin);
     sscanf(argv[2], "%llu", &end);
     vector<bool> prime(end + 1, true);
-    int rank, size;
+    
     MPI_Status status;
-    MPI_Init(&argc, &argv);
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    MPI_Comm_size(MPI_COMM_WORLD, &size);
     prime[0] = prime[1] = false; 
-    long long  temp = 0;
+    long long  temp;
     for(temp = 2; temp * temp <= end; ++temp) {
         if (prime[temp]) {
             for(long long  j = temp * temp; j * j <= end; j += temp ) {
@@ -31,8 +33,8 @@ int main(int argc, char **argv)
         }
 
     }
-    long long  ibegin = (rank - 1) * (end - max(begin,temp) + 1) / (size - 1) + max(begin,temp);
-    long long  iend = rank * (end - max(begin,temp) + 1) / (size - 1) + max(begin,temp) - 1;  
+    long long  ibegin = (long long) (rank - 1)  * (end - max(begin,temp) + 1)/(size - 1)  + max(begin,temp);
+    long long  iend = (long long ) rank  * (end - max(begin,temp) + 1)/(size - 1)  + max(begin,temp) - 1;  
     //cout << rank << ' ' << ibegin << ' ' << iend << endl;
     if (rank != 0) {
 
@@ -86,7 +88,7 @@ int main(int argc, char **argv)
         out.open(argv[3]);
         for(temp = begin; temp * temp <= end; ++temp) {
             if (prime[temp]) {
-                simple.push_back(temp);
+                out << temp << ' ';
                 count++;
             }
 
@@ -94,12 +96,18 @@ int main(int argc, char **argv)
 
         cout << count << endl;
         for(long long i = 0; i < count; ++i) {
-            out << simple[i] << ' ';
+            out << simple[i] << '\n';
+        }        
+        double sumtime = 0;
+        double maxtime = 0;
+        for(k = 1; k < size; ++k) {
+            sumtime += time[k-1];
+            if (time[k-1] > maxtime) {
+                maxtime = time[k-1];
+            }
         }
-        for (k = 1; k < size ; ++k) {
-            cout << time[k-1] << ' ' ;
-        }
-        
+        cout << "all time: " << sumtime << endl << "max time: " << maxtime << endl;
     }
     MPI_Finalize();
+    return 0;
 }
