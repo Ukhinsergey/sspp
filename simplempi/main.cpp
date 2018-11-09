@@ -3,7 +3,7 @@
 #include <vector>
 #include <fstream>
 #include <iostream>
-
+#include <cmath>
 
 using namespace std;
 
@@ -20,7 +20,7 @@ int main(int argc, char **argv)
     int tagtime = 2;
     sscanf(argv[1], "%llu", &begin);
     sscanf(argv[2], "%llu", &end);
-    vector<bool> prime(end + 1, true);
+    vector<bool> prime((int) sqrt(end + 1), true);
     
     MPI_Status status;
     prime[0] = prime[1] = false; 
@@ -39,10 +39,11 @@ int main(int argc, char **argv)
     if (rank != 0) {
 
         time_start = MPI_Wtime();
+        vector<bool> prime1(iend - ibegin + 1, true);
         for(long long  j = 2; j * j <= end; ++j) {
             if(prime[j]) {
                 for(long long  i = (ibegin/j + 1 * (ibegin % j != 0)) * j; i <= min(iend, end); i += j) {
-                    prime[i] = false;
+                    prime1[i - ibegin] = false;
                 }
             }
             
@@ -51,7 +52,7 @@ int main(int argc, char **argv)
             cout << rank << ' ' << i << ' ' << prime[i] << endl;
         }*/
         for(long long  i = ibegin; i <= min(iend, end); ++i) {
-            if (prime[i]) {   
+            if (prime1[i - ibegin]) {   
                 MPI_Send(&i, 1 , MPI_LONG_LONG, 0, tagdata, MPI_COMM_WORLD);
             }
         }

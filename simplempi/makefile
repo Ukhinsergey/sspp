@@ -2,4 +2,4 @@
 
 
 main: main.cpp
-	mpicxx main.cpp -o main
+	mpicxx -O3 main.cpp  -o main
