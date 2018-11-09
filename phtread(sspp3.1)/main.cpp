@@ -24,7 +24,7 @@ struct smpl{
         count = c;
         start = st;
         end = e;
-        time = t;
+        time = t;   
         prime = p;
     }
 };
@@ -86,10 +86,9 @@ int main(int argc, char **argv)
     smpl param[numthread];
     for(int i = 0 ; i < numthread; ++i) {
         param[i] = smpl(numthread + 1, i + 1, 0, max(begin, temp), end, 0, &prime);
-    }
-    for(int i = 0 ; i < numthread; ++i) {
         pthread_create(&tid[i], NULL, worker, &param[i]);
     }
+    
     for(int i = 0; i < numthread; ++i) {
         smpl *smtemp;
         pthread_join(tid[i],(void **) &smtemp);
