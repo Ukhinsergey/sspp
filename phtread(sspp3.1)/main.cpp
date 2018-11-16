@@ -10,7 +10,7 @@
 
 using namespace std;
 
-
+pthread_mutex_t mutex;
 
 struct smpl{
     long long  start;
@@ -20,7 +20,8 @@ struct smpl{
     int count;
     double time;
     std::vector<bool> * prime;
-    smpl(int s = 1 , int r = 1, int c = 0, long long st = 0, long long e = 1, double t = 0, std::vector<bool> *p = NULL){
+    char *file;
+    smpl(int s = 1 , int r = 1, int c = 0, long long st = 0, long long e = 1, double t = 0, std::vector<bool> *p = NULL, char *f = 0){
         size = s;
         rank = r;
         count = c;
@@ -28,6 +29,7 @@ struct smpl{
         end = e;
         time = t;   
         prime = p;
+        file = f;
     }
 };
 
@@ -56,10 +58,16 @@ void *worker(void *atr) {
 
         if (prime1[i - ibegin]) {   
             a->count = a->count + 1;
+            pthread_mutex_lock(&mutex);
+            ofstream fout;
+            fout.open(a->file, ios::out | ios::app);
+            fout << i << endl;
+            fout.close();
+            pthread_mutex_unlock(&mutex);
         }
     }
     a->time = double (time_finish.tv_sec - time_start.tv_sec + 1e-9 * (time_finish.tv_nsec - time_start.tv_nsec));
-    cout << "worke # " << a->rank << " count: " << a->count << " time: " << (double)a->time << endl;
+    //cout << "worke # " << a->rank << " count: " << a->count << " time: " << (double)a->time << endl;
     return a;
 }
 
@@ -68,6 +76,7 @@ int main(int argc, char **argv)
 {   
 
     long long  begin, end;
+    pthread_mutex_init(&mutex, NULL);
     sscanf(argv[1], "%llu", &begin);
     sscanf(argv[2], "%llu", &end);
     int numthread;
@@ -77,20 +86,28 @@ int main(int argc, char **argv)
     prime[0] = prime[1] = false; 
     long long  temp;
     int count = 0;
+    ofstream fout(argv[3]);
     for(temp = 2; temp * temp <= end; ++temp) {
         if (prime[temp]) {
-            count++;
+            //fout << temp << endl;
+            //count++;
             for(long long  j = temp * temp; j * j <= end; j += temp ) {
                 prime[j] = false;
             }
         }
 
     }
-
+    for(long long j = max(begin,(long long ) 2); j * j <= end; ++j) {
+        if (prime[j]) {
+            count++;
+            fout << j << endl;
+        }
+    }
+    fout.close();
     pthread_t tid[numthread];
     smpl param[numthread];
     for(int i = 0 ; i < numthread; ++i) {
-        param[i] = smpl(numthread + 1, i + 1, 0, max(begin, temp), end, 0, &prime);
+        param[i] = smpl(numthread + 1, i + 1, 0, max(begin, temp), end, 0, &prime, argv[3]);
         pthread_create(&tid[i], NULL, worker, &param[i]);
     }
     double maxtime = 0;
@@ -106,5 +123,6 @@ int main(int argc, char **argv)
     }
     cout << count << endl;
     cout << "maxtime: " << maxtime << endl << "sumtime: " << sumtime << endl;
+    pthread_mutex_destroy(&mutex);
     return 0;
 }
