@@ -58,12 +58,12 @@ void *worker(void *atr) {
 
         if (prime1[i - ibegin]) {   
             a->count = a->count + 1;
-            pthread_mutex_lock(&mutex);
+            /*pthread_mutex_lock(&mutex);
             ofstream fout;
             fout.open(a->file, ios::out | ios::app);
             fout << i << endl;
             fout.close();
-            pthread_mutex_unlock(&mutex);
+            pthread_mutex_unlock(&mutex);*/
         }
     }
     a->time = double (time_finish.tv_sec - time_start.tv_sec + 1e-9 * (time_finish.tv_nsec - time_start.tv_nsec));
