@@ -1,5 +1,5 @@
 main: main.cpp
-	g++ -O3 -o main main.cpp
+	mpicxx -O3 -o main main.cpp
 generate: generate.cpp
 	g++ -O3 -o generate generate.cpp
 print: print.cpp
