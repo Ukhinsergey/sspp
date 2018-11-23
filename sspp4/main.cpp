@@ -151,7 +151,6 @@ int main(int argc, char **argv)
 			}
     		
     	}
-    	cout << "rank = " << rank << " time = " << time << endl;
 
     } else {
     	int sizes[2];
@@ -202,7 +201,6 @@ int main(int argc, char **argv)
     		time = time_finish - time_start;
     		MPI_Reduce(c, 0, m, MPI_FLOAT, MPI_SUM, 0, MPI_COMM_WORLD);
     	}
-    	cout << "rank = " << rank << " time = " << time << endl;
     }
     
     MPI_Reduce(&time, &sumtime, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
