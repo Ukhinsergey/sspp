@@ -46,7 +46,7 @@ int main(int argc, char **argv)
 			long long begin = (long long) rank * m / size ;
 			long long end = (long long) (rank + 1) * m /  size - 1;
 
-			float a[end - begin + 1][n];
+			double a[end - begin + 1][n];
 			for(int i = begin ; i <= end; ++i) {
 				for (int j = 0 ; j < n; ++j) {
 					fin.read((char *) &a[i][j], sizeof(a[i][j]));
@@ -56,21 +56,21 @@ int main(int argc, char **argv)
     			MPI_Send(&sizes[0], 2, MPI_INT, k, tagdata, MPI_COMM_WORLD);
     			begin = (long long) k * m / size ;
     			end = (long long) (k + 1) * m /  size - 1;
-    			float temp [end - begin + 1][n];
+    			double temp [end - begin + 1][n];
     			for(int i = begin ; i <= end; ++i) {
     				for (int j = 0 ; j < n; ++j) {
     					fin.read((char *) &temp[i-begin][j], sizeof(temp[i-begin][j]));
     				}
     				
-    				MPI_Send(&temp[i-begin][0], n, MPI_FLOAT, k, tagdata, MPI_COMM_WORLD);
+    				MPI_Send(&temp[i-begin][0], n, MPI_DOUBLE, k, tagdata, MPI_COMM_WORLD);
     			}
     			
     		}
-    		float b[mb];
+    		double b[mb];
     		for (int i = 0 ; i < mb; ++i) {
     			finb.read((char *) &b[i], sizeof(b[i]));
     		}
-    		float c[m];
+    		double c[m];
     		time_start = MPI_Wtime();
     		begin = (long long) rank * m / size ;
     		end = (long long) (rank + 1) * m /  size - 1;
@@ -85,11 +85,11 @@ int main(int argc, char **argv)
     		for ( int i = 1; i < size; ++i) {
     			begin = (long long) i * m / size ;
     			end = (long long) (i + 1) * m /  size - 1;
-    			MPI_Recv(&c[begin], end - begin  + 1, MPI_FLOAT, i, tagc, MPI_COMM_WORLD, &status);
+    			MPI_Recv(&c[begin], end - begin  + 1, MPI_DOUBLE, i, tagc, MPI_COMM_WORLD, &status);
     		}
     		fstream foutc;
     		foutc.open(argv[3], ios::out | ios::binary);
-    		type = 'f';
+    		type = 'd';
     		foutc.write(&type, sizeof(type));
     		foutc.write((char *) &m, sizeof(m));
     		n = 1;
@@ -98,14 +98,14 @@ int main(int argc, char **argv)
     			foutc.write((char *) &c[i], sizeof(c[i]));
     		}
     	} else {
-    		float a[m][n];
+    		double a[m][n];
     		for(int i = 0 ; i < m; ++i) {
     			for (int j = 0 ; j < n; ++j) {
     				fin.read((char *) &a[i][j], sizeof(a[i][j]));
     				
     			}
     		}
-    		float b[mb];
+    		double b[mb];
     		for (int i = 0 ; i < mb; ++i) {
     			finb.read((char *) &b[i], sizeof(b[i]));
     		}
@@ -113,17 +113,17 @@ int main(int argc, char **argv)
     			MPI_Send(&sizes[0], 2, MPI_INT, k, tagdata, MPI_COMM_WORLD);
     			long long begin = (long long) k * n / size;
     			long long end = (long long) (k + 1) * n /  size - 1;
-    			float temp[end-begin +1][m];
+    			double temp[end-begin +1][m];
     			for(int j = begin; j <= end; ++j) {
     				for(int i = 0 ; i < m; ++i) {
     					temp[j - begin][i] = a[i][j];
     				}
-    				MPI_Send(&temp[j - begin][0], m, MPI_FLOAT, k, tagdata, MPI_COMM_WORLD); ///error here
+    				MPI_Send(&temp[j - begin][0], m, MPI_DOUBLE, k, tagdata, MPI_COMM_WORLD); 
     			}
-    			MPI_Send(&b[begin], end - begin + 1, MPI_FLOAT, k, tagb, MPI_COMM_WORLD);
+    			MPI_Send(&b[begin], end - begin + 1, MPI_DOUBLE, k, tagb, MPI_COMM_WORLD);
     		}
-    		float c[m];
-    		float c1[m];
+    		double c[m];
+    		double c1[m];
     		time_start = MPI_Wtime();
     		long long begin = (long long) rank * n / size ;
     		long long end = (long long) (rank + 1) * n /  size - 1;
@@ -136,12 +136,12 @@ int main(int argc, char **argv)
     		time_finish = MPI_Wtime();
     		sumtime = time_finish - time_start;
     		time = sumtime;
-    		//MPI_Reduce(&c[0], &c[0], m, MPI_FLOAT, MPI_SUM, 0, MPI_COMM_WORLD);
-    		MPI_Reduce(c, c1, m, MPI_FLOAT, MPI_SUM, 0, MPI_COMM_WORLD);
+    		
+    		MPI_Reduce(c, c1, m, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
 
     		fstream foutc;
 	    	foutc.open(argv[3], ios::out | ios::binary);
-	    	type = 'f';
+	    	type = 'd';
 	    	foutc.write(&type, sizeof(type));
 	    	foutc.write((char *) &m, sizeof(m));
 	    	n = 1;
@@ -158,17 +158,17 @@ int main(int argc, char **argv)
     	m = sizes[0];
     	n = sizes[1];
     	if (m >= n) {
-    		float b[mb];
+    		double b[mb];
     		for (int i = 0 ; i < mb; ++i) {
     			finb.read((char *) &b[i], sizeof(b[i]));
     		}
     		long long begin = (long long) rank * m / size ;
     		long long end = (long long) (rank + 1) * m /  size - 1;
-    		float a[end - begin + 1][n];
+    		double a[end - begin + 1][n];
     		for(int i = begin; i <= end; ++i) {
-    			MPI_Recv(&a[i - begin][0], n, MPI_FLOAT, 0, tagdata, MPI_COMM_WORLD, &status);
+    			MPI_Recv(&a[i - begin][0], n, MPI_DOUBLE, 0, tagdata, MPI_COMM_WORLD, &status);
     		}
-    		float c[end - begin + 1];
+    		double c[end - begin + 1];
     		time_start = MPI_Wtime();
     		for(int i = begin ; i <= end; ++i) {
     			c[i - begin] = 0;
@@ -177,18 +177,18 @@ int main(int argc, char **argv)
     			}
     		}
     		time_finish = MPI_Wtime();
-    		MPI_Send(&c[0], end - begin  + 1, MPI_FLOAT, 0, tagc, MPI_COMM_WORLD);
+    		MPI_Send(&c[0], end - begin  + 1, MPI_DOUBLE, 0, tagc, MPI_COMM_WORLD);
     		time = time_finish - time_start;
     	} else {
     		long long begin = (long long) rank * n / size ;
     		long long end = (long long) (rank + 1) * n /  size - 1;
-    		float a[end - begin + 1][m];
+    		double a[end - begin + 1][m];
     		for(int i = begin; i <= end; ++i) {
-    			MPI_Recv(&a[i - begin][0], m, MPI_FLOAT, 0, tagdata, MPI_COMM_WORLD, &status);
+    			MPI_Recv(&a[i - begin][0], m, MPI_DOUBLE, 0, tagdata, MPI_COMM_WORLD, &status);
     		}
-    		float b[end - begin + 1];
-    		MPI_Recv(&b[0], end - begin + 1, MPI_FLOAT, 0, tagb, MPI_COMM_WORLD, &status);
-    		float c[m];
+    		double b[end - begin + 1];
+    		MPI_Recv(&b[0], end - begin + 1, MPI_DOUBLE, 0, tagb, MPI_COMM_WORLD, &status);
+    		double c[m];
     		time_start = MPI_Wtime();
     		for(int i = 0 ; i < m; ++i) {
     			c[i] = 0;
@@ -199,7 +199,7 @@ int main(int argc, char **argv)
     		time_finish = MPI_Wtime();
 
     		time = time_finish - time_start;
-    		MPI_Reduce(c, 0, m, MPI_FLOAT, MPI_SUM, 0, MPI_COMM_WORLD);
+    		MPI_Reduce(c, 0, m, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
     	}
     }
     
