@@ -1,6 +1,6 @@
 #include "mpi.h"
 #include <iostream>
-#include <cstdint>
+#include <stdint.h>
 #include <fstream>
 
 using namespace std;
@@ -21,7 +21,7 @@ int main(int argc, char **argv)
 	MPI_Comm_size(MPI_COMM_WORLD, &size);
 	MPI_Status status;
 
-	double time_start, time_finish, time;
+	double time_start, time_finish, time, maxtime;
 	fstream finb(argv[2]);
 	uint64_t mb, nb;
 	char type;
@@ -36,6 +36,7 @@ int main(int argc, char **argv)
 		fin.read(&type, sizeof(type));
 		fin.read((char *) &m, sizeof(m));
 		fin.read((char *) &n, sizeof(n));
+		cout << "m = " << m <<" n = " << n << " size = " << size << endl;
 		int sizes[2];
 		sizes[1] = n;
 		sizes[0] = m; 
@@ -70,6 +71,7 @@ int main(int argc, char **argv)
     			finb.read((char *) &b[i], sizeof(b[i]));
     		}
     		float c[m];
+    		time_start = MPI_Wtime();
     		begin = (long long) rank * m / size ;
     		end = (long long) (rank + 1) * m /  size - 1;
     		for (int i = begin; i <=end; ++i) {
@@ -78,6 +80,8 @@ int main(int argc, char **argv)
     				c[i - begin] += a[i - begin][j] * b[j];
     			}
     		}
+    		time_finish = MPI_Wtime();
+    		time = time_finish - time_start;
     		for ( int i = 1; i < size; ++i) {
     			begin = (long long) i * m / size ;
     			end = (long long) (i + 1) * m /  size - 1;
@@ -98,6 +102,7 @@ int main(int argc, char **argv)
     		for(int i = 0 ; i < m; ++i) {
     			for (int j = 0 ; j < n; ++j) {
     				fin.read((char *) &a[i][j], sizeof(a[i][j]));
+    				
     			}
     		}
     		float b[mb];
@@ -113,34 +118,40 @@ int main(int argc, char **argv)
     				for(int i = 0 ; i < m; ++i) {
     					temp[j - begin][i] = a[i][j];
     				}
-    				MPI_Send(&temp[j - begin][0], n, MPI_FLOAT, k, tagdata, MPI_COMM_WORLD);
+    				MPI_Send(&temp[j - begin][0], m, MPI_FLOAT, k, tagdata, MPI_COMM_WORLD); ///error here
     			}
     			MPI_Send(&b[begin], end - begin + 1, MPI_FLOAT, k, tagb, MPI_COMM_WORLD);
     		}
     		float c[m];
-    		long long begin = (long long) rank * m / size ;
-    		long long end = (long long) (rank + 1) * m /  size - 1;
+    		float c1[m];
+    		time_start = MPI_Wtime();
+    		long long begin = (long long) rank * n / size ;
+    		long long end = (long long) (rank + 1) * n /  size - 1;
     		for(int i = 0;  i < m; ++i) {
     			c[i] = 0;
     			for(int j = begin; j <= end; ++j) {
     				c[i] += a[i][j - begin] * b[j - begin];
     			}
     		}
-
-    		//MPI_Reduce
+    		time_finish = MPI_Wtime();
+    		sumtime = time_finish - time_start;
+    		time = sumtime;
+    		//MPI_Reduce(&c[0], &c[0], m, MPI_FLOAT, MPI_SUM, 0, MPI_COMM_WORLD);
+    		MPI_Reduce(c, c1, m, MPI_FLOAT, MPI_SUM, 0, MPI_COMM_WORLD);
 
     		fstream foutc;
-    		foutc.open(argv[3], ios::out | ios::binary);
-    		type = 'f';
-    		foutc.write(&type, sizeof(type));
-    		foutc.write((char *) &m, sizeof(m));
-    		n = 1;
-    		foutc.write((char *) &n, sizeof(n));
-    		for(int i = 0 ; i < m ; ++i) {
-    			foutc.write((char *) &c[i], sizeof(c[i]));
-    		}
+	    	foutc.open(argv[3], ios::out | ios::binary);
+	    	type = 'f';
+	    	foutc.write(&type, sizeof(type));
+	    	foutc.write((char *) &m, sizeof(m));
+	    	n = 1;
+	    	foutc.write((char *) &n, sizeof(n));
+	    	for(int i = 0 ; i < m ; ++i) {
+	    		foutc.write((char *) &c1[i], sizeof(c[i]));
+			}
+    		
     	}
-    	
+    	cout << "rank = " << rank << " time = " << time << endl;
 
     } else {
     	int sizes[2];
@@ -174,7 +185,7 @@ int main(int argc, char **argv)
     		long long end = (long long) (rank + 1) * n /  size - 1;
     		float a[end - begin + 1][m];
     		for(int i = begin; i <= end; ++i) {
-    			MPI_Recv(&a[i - begin][0], n, MPI_FLOAT, 0, tagdata, MPI_COMM_WORLD, &status);
+    			MPI_Recv(&a[i - begin][0], m, MPI_FLOAT, 0, tagdata, MPI_COMM_WORLD, &status);
     		}
     		float b[end - begin + 1];
     		MPI_Recv(&b[0], end - begin + 1, MPI_FLOAT, 0, tagb, MPI_COMM_WORLD, &status);
@@ -187,14 +198,22 @@ int main(int argc, char **argv)
     			}
     		}
     		time_finish = MPI_Wtime();
-    		
+
     		time = time_finish - time_start;
+    		MPI_Reduce(c, 0, m, MPI_FLOAT, MPI_SUM, 0, MPI_COMM_WORLD);
     	}
+    	cout << "rank = " << rank << " time = " << time << endl;
     }
+    
     MPI_Reduce(&time, &sumtime, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+    MPI_Reduce(&time, &maxtime, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
     if (rank == 0 ) {
     	cout << "all time :" << sumtime << endl;
+    	cout << "max time :" << maxtime << endl;
     }
+
+
+   
     MPI_Finalize();
     return 0;	
 }
