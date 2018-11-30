@@ -13,7 +13,7 @@ int main() {
 	for(int i = 0 ; i < 512; ++i) {
 		a[i] = i;
 	}
-	for (int i = 0 ; i < 256; ++i) {
+	for (int i = 0 ; i < 512; ++i) {
 		int k = rand() % 512;
 		int temp = a[i];
 		a[i] = a[k];
@@ -21,7 +21,7 @@ int main() {
 	}
 	ofstream fout("my.map");
 	for (int i = 0 ; i < 512; ++i) {
-		fout << (a[i] / 8 / 8 ) % 8 << ' ' << (a[i] / 8) % 8 << ' ' << a[i] % 8 << ' ' << 1 << endl;
+		fout << (a[i] / 8 / 8 ) % 8 << ' ' << (a[i] / 8) % 8 << ' ' << a[i] % 8 << ' ' << 0 << endl;
 	}
 	fout.close();
 	return 0;
