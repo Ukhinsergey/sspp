@@ -106,6 +106,7 @@ int main(int argc, char **argv) {
  		 
  	}
  	int bufsizes[2] = { -1 , -1 };
+ 	int partx, party;
  	if (coords[1] == coords[2]) {
  		int sendfrom;
  		int sendfromcoords[3] = {coords[0],coords[1],0};
@@ -113,15 +114,12 @@ int main(int argc, char **argv) {
  		MPI_Recv(&bufsizes, 2, MPI_INT, sendfrom, tagsizebuf, cube, &status);
  		partx = bufsizes[0];
  		party = bufsizes[1];
- 		double **matra = new double *[party];
- 		for(int i = 0 ; i < party; ++i) {
- 			matra[i] = new double [partx];
- 		}
+ 		double matra[party][partx];
  		for(int j = 0 ; j < party; ++j) {
  			MPI_Recv(&matra[j][0], partx, MPI_DOUBLE, sendfrom, tagmatra, cube, &status);
  		}
 
- 		matr = matra;
+
 
  		/*if (coords[0] == sizex - 1 && coords[1] == sizey - 1) {
  			for(int i = 0 ; i < party; ++i) {
@@ -140,7 +138,7 @@ int main(int argc, char **argv) {
  	MPI_Bcast(bufsizes, 2, MPI_INT, bcastroot, liney);
  	partx = bufsizes[0];
  	party = bufsizes[1];
- 	double matra[party][partx];
+ 	matra[party][partx];
  	for(int j = 0 ; j < party; ++j) {
  		MPI_Bcast(&matra[j][0], partx, MPI_DOUBLE, bcastroot, liney);
  	}
