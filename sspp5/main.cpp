@@ -53,6 +53,9 @@ int main(int argc, char **argv) {
 	double realtime = 0;
 	double realtimetemp1, realtimetemp2;
 
+    double *matra, *matrb;
+    int partx, party;
+    int bpartx, bparty;
 
 	if (coords[2] == 0) {
 		timetemp1 = MPI_Wtime();
@@ -69,8 +72,6 @@ int main(int argc, char **argv) {
 
 		int n = na;
 		int m = ma;
-		int partx;
-		int party;
 		if ( coords[0] != sizex - 1) {
 			partx = ma / sizex;
 		} else {
@@ -96,7 +97,7 @@ int main(int argc, char **argv) {
 		MPI_File_set_view(file, offset, MPI_DOUBLE, filetype, "native", MPI_INFO_NULL);
 
 
-		double *matra = new double[partx * party];
+		matra = new double[partx * party];
 
 
 		MPI_File_read(file, matra , partx * party, MPI_DOUBLE, &status);
@@ -114,20 +115,20 @@ int main(int argc, char **argv) {
 		MPI_Cart_rank(cube, sendtocoord, &sendtorank);
 		int bufsizes[2] = {partx, party};
 		MPI_Send(bufsizes, 2, MPI_INT, sendtorank, tagsizebuf, cube);
-        MPI_Send(matra, partx * party, MPI_DOUBLE, sendtorank, tagmatra, cube); 
+        if( coords[1] != 0) {
+            MPI_Send(matra, partx * party, MPI_DOUBLE, sendtorank, tagmatra, cube); 
+        }
 
 
         realtimetemp2 = MPI_Wtime();
         realtime = realtimetemp2 - realtimetemp1;
 
-        delete[] matra;
 
     }
-    MPI_Barrier(cube);
+
     realtimetemp1 = MPI_Wtime();
 
     int bufsizes[2] = { -1 , -1 };
-    int partx, party;
 
     if (coords[1] == coords[2]) {
         int sendfrom;
@@ -145,7 +146,10 @@ int main(int argc, char **argv) {
     partx = bufsizes[0];
     party = bufsizes[1];
 
-    double *matra = new double[partx * party];
+    if(coords[1] == 0 && coords[2] == 0) {
+    } else {
+        matra = new double[partx * party];
+    }
 
 
     if (coords[1] == coords[2]) {
@@ -153,13 +157,14 @@ int main(int argc, char **argv) {
         int sendfrom;
         int sendfromcoords[3] = {coords[0],coords[1],0};
         MPI_Cart_rank(cube, sendfromcoords, &sendfrom);
-        MPI_Recv(matra, partx * party, MPI_DOUBLE, sendfrom, tagmatra, cube, &status);
+        if(coords[2] != 0) {
+            MPI_Recv(matra, partx * party, MPI_DOUBLE, sendfrom, tagmatra, cube, &status);
+        }
 
     }
 
     MPI_Bcast(matra, partx * party, MPI_DOUBLE, bcastroot, liney);
 
-    MPI_Barrier(cube);
     /*if(coords[0] == 2 && coords[1] == 2 && coords[2] == 2) {
         for(int i = 0 ; i < partx; ++i) {
             for (int j = 0 ; j < party ; ++j) {
@@ -189,8 +194,6 @@ int main(int argc, char **argv) {
 
         int n = nb;
         int m = mb;
-        int bpartx;
-        int bparty;
         if ( coords[0] != sizex - 1) {
             bpartx = mb / sizex;
         } else {
@@ -215,7 +218,7 @@ int main(int argc, char **argv) {
         timetemp1 = MPI_Wtime();
         MPI_File_set_view(file, offset, MPI_DOUBLE, filetype, "native", MPI_INFO_NULL);
 
-        double *matrb = new double[bpartx * bparty];
+        matrb = new double[bpartx * bparty];
 
         MPI_File_read(file, matrb, bpartx * bparty, MPI_DOUBLE, &status);
 
@@ -238,15 +241,15 @@ int main(int argc, char **argv) {
         MPI_Cart_rank(cube, sendtocoord, &sendtorank);
         int bbufsizes[2] = {bpartx, bparty};
         MPI_Send(bbufsizes, 2, MPI_INT, sendtorank, tagsizebuf, cube);
-        MPI_Send(matrb, bpartx * bparty, MPI_DOUBLE, sendtorank, tagmatrb, cube); 
+        if( coords[0] != 0) {
+            MPI_Send(matrb, bpartx * bparty, MPI_DOUBLE, sendtorank, tagmatrb, cube); 
+        }
 
-        delete[] matrb;
     }
-    MPI_Barrier(cube);
+
     realtimetemp1 = MPI_Wtime();
 
     int bbufsizes[2] = { -1 , -1 };
-    int bpartx, bparty;
 
     if (coords[0] == coords[2]) {
         int sendfrom;
@@ -261,13 +264,18 @@ int main(int argc, char **argv) {
     MPI_Bcast(bbufsizes, 2, MPI_INT, bcastroot, linex);
     bpartx = bbufsizes[0];
     bparty = bbufsizes[1];
-    double *matrb = new double [bpartx * bparty];
+    if(coords[0] == 0 && coords[2] == 0) {
+    } else {
+        matrb = new double [bpartx * bparty];     
+    }
     if (coords[0] == coords[2]) {
 
         int sendfrom;
         int sendfromcoords[3] = {coords[0],coords[1],0};
         MPI_Cart_rank(cube, sendfromcoords, &sendfrom);
-        MPI_Recv(matrb, bpartx * bparty, MPI_DOUBLE, sendfrom, tagmatrb, cube, &status);
+        if(coords[2] != 0) {
+            MPI_Recv(matrb, bpartx * bparty, MPI_DOUBLE, sendfrom, tagmatrb, cube, &status);
+        }
     }
 
     MPI_Bcast(matrb, bpartx * bparty, MPI_DOUBLE, bcastroot, linex);
@@ -283,7 +291,7 @@ int main(int argc, char **argv) {
 
  	// matr b reade
 
-    MPI_Barrier(cube);
+ 
     double *matrclocal = new double [partx * bparty];
 
 
