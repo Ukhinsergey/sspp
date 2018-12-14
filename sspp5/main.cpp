@@ -59,28 +59,29 @@ int main(int argc, char **argv) {
  		int partx;
  		int party;
  		if ( coords[0] != sizex - 1) {
- 			partx = na / sizex;
+ 			party = ma / sizex;
  		} else {
- 			partx = na / sizex + na % sizex;
+ 			party = ma / sizex + ma % sizex;
  		}
 
  		if ( coords[1] != sizey - 1) {
- 			party = ma / sizey;
+ 			partx = na / sizey;
  		} else {
- 			party = ma / sizey + ma % sizey;
+ 			partx = na / sizey + na % sizey;
  		}
 
- 		int startx = coords[0] * na / sizex;
+ 		int startx = coords[1] * (na / sizex);
  		MPI_Type_create_subarray(1,  &n, &partx, &startx, MPI_ORDER_C, MPI_DOUBLE, &filetype);
  		MPI_Type_commit(&filetype);
 
  		int temp = ma /sizey;
- 		int offset = 2 * sizeof(uint64_t) + sizeof (char) + sizeof(double) * n * temp  * coords[1] ; 
+ 		int offset = 2 * sizeof(uint64_t) + sizeof (char) + sizeof(double) * n * (ma / sizey) * coords[0]; 
  		MPI_File_set_view(file, offset, MPI_DOUBLE, filetype, "native", MPI_INFO_NULL);
  		double matra[party][partx];
  		for(int i = 0 ; i < party; ++i) {
  			MPI_File_read(file, &matra[i][0], partx, MPI_DOUBLE, &status);
  		}
+ 		
  		MPI_File_close(&file);
  		
  		int sendtorank;
@@ -127,7 +128,14 @@ int main(int argc, char **argv) {
  	for(int j = 0 ; j < party; ++j) {
  		MPI_Bcast(&matra[j][0], partx, MPI_DOUBLE, bcastroot, liney);
  	}
-
+ 	/*if (coords[0] == sizex - 2 && coords[1] == sizey - 1 && coords[2] == sizez - 2) {
+ 		for(int i = 0 ; i < party; ++i) {
+ 			for (int j = 0 ; j < partx; ++j) {
+ 				cout << matra[i][j] << ' ';
+ 			}
+ 			cout << endl;
+ 		}
+ 	}*/
 
  	//matr A ready
 
@@ -144,23 +152,23 @@ int main(int argc, char **argv) {
  		int bpartx;
  		int bparty;
  		if ( coords[0] != sizex - 1) {
- 			bpartx = nb / sizex;
+ 			bparty = mb / sizex;
  		} else {
- 			bpartx = nb / sizex + nb % sizex;
+ 			bparty = mb / sizex + mb % sizex;
  		}
 
  		if ( coords[1] != sizey - 1) {
- 			bparty = mb / sizey;
+ 			bpartx = nb / sizey;
  		} else {
- 			bparty = mb / sizey + mb % sizey;
+ 			bpartx = nb / sizey + nb % sizey;
  		}
 
- 		int startx = coords[0] * nb / sizex;
+ 		int startx = coords[1] * nb / sizex;
  		MPI_Type_create_subarray(1,  &n, &bpartx, &startx, MPI_ORDER_C, MPI_DOUBLE, &filetype);
  		MPI_Type_commit(&filetype);
 
  		int temp = mb /sizey;
- 		int offset = 2 * sizeof(uint64_t) + sizeof (char) + sizeof(double) * n * temp  * coords[1] ; 
+ 		int offset = 2 * sizeof(uint64_t) + sizeof (char) + sizeof(double) * n * temp  * coords[0] ; 
  		MPI_File_set_view(file, offset, MPI_DOUBLE, filetype, "native", MPI_INFO_NULL);
  		double matrb[bparty][bpartx];
  		for(int i = 0 ; i < bparty; ++i) {
@@ -168,14 +176,7 @@ int main(int argc, char **argv) {
  		}
  		MPI_File_close(&file);
 
- 		/*if (coords[0] == sizex - 2 && coords[1] == sizey - 1) {
- 			for(int i = 0 ; i < party; ++i) {
- 				for (int j = 0 ; j < partx; ++j) {
- 					cout << matrb[i][j] << ' ';
- 				}
- 				cout << endl;
- 			}
- 		}*/
+ 		
 
  		int sendtorank;
  		int sendtocoord[3] = {coords[0], coords[1], coords[0]};
@@ -229,13 +230,13 @@ int main(int argc, char **argv) {
  			}
  			cout << endl;
  		}
- 	}*/
- 	
+ 	}
+ 	*/
  	//matr b ready
 
- 	/*double matrclocal[party][bpartx];
- 	if(partx != bparty) {
- 		//cout << "cant multyply " << partx << ' ' <<bparty << ' ' << coords[0] << ' ' << coords[1] << ' ' <<coords[2] <<endl;
+ 	double matrclocal[party][bpartx];
+ 	if(bparty != partx) {
+ 		cout << "cant multyply " << bpartx << ' ' <<party << ' ' << coords[0] << ' ' << coords[1] << ' ' <<coords[2] <<endl;
  		//exit(0);
  	} else {
  		
@@ -253,7 +254,7 @@ int main(int argc, char **argv) {
  		}
  	}
 
- 	if (coords[0] == sizex - 2 && coords[1] == sizey - 1 && coords[2] == sizez - 2) {
+ 	/*if (coords[0] == sizex - 1 && coords[1] == sizey - 1 && coords[2] == sizez - 1) {
  		for(int i = 0 ; i < party; ++i) {
  			for (int j = 0 ; j < partx; ++j) {
  				cout << matra[i][j] << ' ';
@@ -262,7 +263,7 @@ int main(int argc, char **argv) {
  		}
  		cout << endl << "B : " <<endl;
  	}
- 	if (coords[0] == sizex - 2 && coords[1] == sizey - 1 && coords[2] == sizez - 2) {
+ 	if (coords[0] == sizex - 1 && coords[1] == sizey - 1 && coords[2] == sizez - 1) {
  		for(int i = 0 ; i < bparty; ++i) {
  			for (int j = 0 ; j < bpartx; ++j) {
  				cout << matrb[i][j] << ' ';
@@ -271,16 +272,19 @@ int main(int argc, char **argv) {
  		}
  		cout << endl << "C : " <<endl;
  	}
- 	if (coords[0] == sizex - 2 && coords[1] == sizey - 1 && coords[2] == sizez - 2) {
+ 	if (coords[0] == sizex - 1 && coords[1] == sizey - 1 && coords[2] == sizez - 1) {
  		for(int i = 0 ; i < party; ++i) {
  			for (int j = 0 ; j < bpartx; ++j) {
  				cout << matrclocal[i][j] << ' ';
  			}
  			cout << endl;
  		}
- 		cout << partx << bparty << endl;
+ 		//cout << partx << bparty << endl;
  	}
- 	*/
+	*/
+
+
+
 	MPI_Comm_free(&cube);
 	MPI_Comm_free(&square);
 	MPI_Comm_free(&linez);
