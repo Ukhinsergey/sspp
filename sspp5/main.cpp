@@ -24,110 +24,110 @@ int main(int argc, char **argv) {
 	int newsize = pow(size, 1.0001/3);
 	MPI_Comm cube, square, linex, liney, linez;
 	int dims[3] = {newsize, newsize, newsize};
- 	int period[3] = {0,0,0}; 
- 	MPI_Cart_create(MPI_COMM_WORLD, 3, dims, period, false, &cube);
- 	MPI_Comm_rank(cube, &rank);
+	int period[3] = {0,0,0}; 
+	MPI_Cart_create(MPI_COMM_WORLD, 3, dims, period, false, &cube);
+	MPI_Comm_rank(cube, &rank);
 
- 	int coords[3];
- 	MPI_Cart_coords(cube, rank, 3, coords);
- 	int remain_dims[3] = {1,1,0};
- 	MPI_Cart_sub(cube, remain_dims, &square);
- 	remain_dims[1] = 0;
- 	MPI_Cart_sub(cube, remain_dims, &linex);
- 	remain_dims[0] = 0;
- 	remain_dims[1] = 1;
- 	MPI_Cart_sub(cube, remain_dims, &liney);
- 	remain_dims[1] = 0;
- 	remain_dims[2] = 1;
- 	MPI_Cart_sub(cube, remain_dims, &linez);
- 	int sizex, sizey, sizez;
- 	MPI_Comm_size(linex, &sizex);
- 	MPI_Comm_size(liney, &sizey);
- 	MPI_Comm_size(linez, &sizez);
- 	MPI_Datatype filetype;
- 	uint64_t ma, na, mb, nb;
+	int coords[3];
+	MPI_Cart_coords(cube, rank, 3, coords);
+	int remain_dims[3] = {1,1,0};
+	MPI_Cart_sub(cube, remain_dims, &square);
+	remain_dims[1] = 0;
+	MPI_Cart_sub(cube, remain_dims, &linex);
+	remain_dims[0] = 0;
+	remain_dims[1] = 1;
+	MPI_Cart_sub(cube, remain_dims, &liney);
+	remain_dims[1] = 0;
+	remain_dims[2] = 1;
+	MPI_Cart_sub(cube, remain_dims, &linez);
+	int sizex, sizey, sizez;
+	MPI_Comm_size(linex, &sizex);
+	MPI_Comm_size(liney, &sizey);
+	MPI_Comm_size(linez, &sizez);
+	MPI_Datatype filetype;
+	uint64_t ma, na, mb, nb;
 
- 	if (coords[2] == 0) {
- 		MPI_File file;
- 		MPI_File_open(square, argv[1], MPI_MODE_RDONLY, MPI_INFO_NULL, &file);
+	if (coords[2] == 0) {
+		MPI_File file;
+		MPI_File_open(square, argv[1], MPI_MODE_RDONLY, MPI_INFO_NULL, &file);
 		char type;
- 		MPI_File_read_all(file, &type, 1, MPI_CHAR, &status);
- 		MPI_File_read_all(file, &ma, 1, MPI_UNSIGNED_LONG_LONG, &status);
- 		MPI_File_read_all(file, &na, 1, MPI_UNSIGNED_LONG_LONG, &status);
- 		int n = na;
- 		int m = ma;
- 		int partx;
- 		int party;
- 		if ( coords[0] != sizex - 1) {
- 			party = ma / sizex;
- 		} else {
- 			party = ma / sizex + ma % sizex;
- 		}
+		MPI_File_read_all(file, &type, 1, MPI_CHAR, &status);
+		MPI_File_read_all(file, &ma, 1, MPI_UNSIGNED_LONG_LONG, &status);
+		MPI_File_read_all(file, &na, 1, MPI_UNSIGNED_LONG_LONG, &status);
+		int n = na;
+		int m = ma;
+		int partx;
+		int party;
+		if ( coords[0] != sizex - 1) {
+			party = ma / sizex;
+		} else {
+			party = ma / sizex + ma % sizex;
+		}
 
- 		if ( coords[1] != sizey - 1) {
- 			partx = na / sizey;
- 		} else {
- 			partx = na / sizey + na % sizey;
- 		}
+		if ( coords[1] != sizey - 1) {
+			partx = na / sizey;
+		} else {
+			partx = na / sizey + na % sizey;
+		}
 
- 		int startx = coords[1] * (na / sizex);
- 		MPI_Type_create_subarray(1,  &n, &partx, &startx, MPI_ORDER_C, MPI_DOUBLE, &filetype);
- 		MPI_Type_commit(&filetype);
+		int startx = coords[1] * (na / sizex);
+		MPI_Type_create_subarray(1,  &n, &partx, &startx, MPI_ORDER_C, MPI_DOUBLE, &filetype);
+		MPI_Type_commit(&filetype);
 
- 		int temp = ma /sizey;
- 		int offset = 2 * sizeof(uint64_t) + sizeof (char) + sizeof(double) * n * (ma / sizey) * coords[0]; 
- 		MPI_File_set_view(file, offset, MPI_DOUBLE, filetype, "native", MPI_INFO_NULL);
- 		double matra[party][partx];
- 		for(int i = 0 ; i < party; ++i) {
- 			MPI_File_read(file, &matra[i][0], partx, MPI_DOUBLE, &status);
- 		}
- 		
- 		MPI_File_close(&file);
- 		
- 		int sendtorank;
- 		int sendtocoord[3] = {coords[0], coords[1], coords[1]};
- 		MPI_Cart_rank(cube, sendtocoord, &sendtorank);
- 		int bufsizes[2] = {partx, party};
- 		MPI_Send(bufsizes, 2, MPI_INT, sendtorank, tagsizebuf, cube);
- 		for(int j = 0 ; j < party; ++j) {
- 			MPI_Send(&matra[j][0], partx, MPI_DOUBLE, sendtorank, tagmatra, cube);
- 		}
- 			 
- 	}
- 	int bufsizes[2] = { -1 , -1 };
- 	int partx, party;
+		int temp = ma /sizey;
+		int offset = 2 * sizeof(uint64_t) + sizeof (char) + sizeof(double) * n * (ma / sizey) * coords[0]; 
+		MPI_File_set_view(file, offset, MPI_DOUBLE, filetype, "native", MPI_INFO_NULL);
+		double matra[party][partx];
+		for(int i = 0 ; i < party; ++i) {
+			MPI_File_read(file, &matra[i][0], partx, MPI_DOUBLE, &status);
+		}
 
- 	if (coords[1] == coords[2]) {
- 		int sendfrom;
- 		int sendfromcoords[3] = {coords[0],coords[1],0};
- 		MPI_Cart_rank(cube, sendfromcoords, &sendfrom);
- 		MPI_Recv(&bufsizes, 2, MPI_INT, sendfrom, tagsizebuf, cube, &status);
- 		partx = bufsizes[0];
- 		party = bufsizes[1];
- 	}
+		MPI_File_close(&file);
 
- 	int bcastroot;
- 	int bcastcoords[1] = {coords[2]} ;
- 	MPI_Cart_rank(liney, bcastcoords, &bcastroot);
- 	MPI_Bcast(bufsizes, 2, MPI_INT, bcastroot, liney);
- 	partx = bufsizes[0];
- 	party = bufsizes[1];
- 	double matra[party][partx];
+		int sendtorank;
+		int sendtocoord[3] = {coords[0], coords[1], coords[1]};
+		MPI_Cart_rank(cube, sendtocoord, &sendtorank);
+		int bufsizes[2] = {partx, party};
+		MPI_Send(bufsizes, 2, MPI_INT, sendtorank, tagsizebuf, cube);
+		for(int j = 0 ; j < party; ++j) {
+			MPI_Send(&matra[j][0], partx, MPI_DOUBLE, sendtorank, tagmatra, cube);
+		}
 
- 	if (coords[1] == coords[2]) {
+	}
+	int bufsizes[2] = { -1 , -1 };
+	int partx, party;
 
- 		int sendfrom;
- 		int sendfromcoords[3] = {coords[0],coords[1],0};
- 		MPI_Cart_rank(cube, sendfromcoords, &sendfrom);
+	if (coords[1] == coords[2]) {
+		int sendfrom;
+		int sendfromcoords[3] = {coords[0],coords[1],0};
+		MPI_Cart_rank(cube, sendfromcoords, &sendfrom);
+		MPI_Recv(&bufsizes, 2, MPI_INT, sendfrom, tagsizebuf, cube, &status);
+		partx = bufsizes[0];
+		party = bufsizes[1];
+	}
 
- 		for(int j = 0 ; j < party; ++j) {
- 			MPI_Recv(&matra[j][0], partx, MPI_DOUBLE, sendfrom, tagmatra, cube, &status);
- 		}
- 	}
+	int bcastroot;
+	int bcastcoords[1] = {coords[2]} ;
+	MPI_Cart_rank(liney, bcastcoords, &bcastroot);
+	MPI_Bcast(bufsizes, 2, MPI_INT, bcastroot, liney);
+	partx = bufsizes[0];
+	party = bufsizes[1];
+	double matra[party][partx];
 
- 	for(int j = 0 ; j < party; ++j) {
- 		MPI_Bcast(&matra[j][0], partx, MPI_DOUBLE, bcastroot, liney);
- 	}
+	if (coords[1] == coords[2]) {
+
+		int sendfrom;
+		int sendfromcoords[3] = {coords[0],coords[1],0};
+		MPI_Cart_rank(cube, sendfromcoords, &sendfrom);
+
+		for(int j = 0 ; j < party; ++j) {
+			MPI_Recv(&matra[j][0], partx, MPI_DOUBLE, sendfrom, tagmatra, cube, &status);
+		}
+	}
+
+	for(int j = 0 ; j < party; ++j) {
+		MPI_Bcast(&matra[j][0], partx, MPI_DOUBLE, bcastroot, liney);
+	}
  	/*if (coords[0] == sizex - 2 && coords[1] == sizey - 1 && coords[2] == sizez - 2) {
  		for(int i = 0 ; i < party; ++i) {
  			for (int j = 0 ; j < partx; ++j) {
@@ -140,87 +140,87 @@ int main(int argc, char **argv) {
  	//matr A ready
 
 
- 	if ( coords[2] == 0) {
- 		MPI_File file;
- 		MPI_File_open(square, argv[2], MPI_MODE_RDONLY, MPI_INFO_NULL, &file);
+	if ( coords[2] == 0) {
+		MPI_File file;
+		MPI_File_open(square, argv[2], MPI_MODE_RDONLY, MPI_INFO_NULL, &file);
 		char type;
- 		MPI_File_read_all(file, &type, 1, MPI_CHAR, &status);
- 		MPI_File_read_all(file, &mb, 1, MPI_UNSIGNED_LONG_LONG, &status);
- 		MPI_File_read_all(file, &nb, 1, MPI_UNSIGNED_LONG_LONG, &status);
- 		int n = nb;
- 		int m = mb;
- 		int bpartx;
- 		int bparty;
- 		if ( coords[0] != sizex - 1) {
- 			bparty = mb / sizex;
- 		} else {
- 			bparty = mb / sizex + mb % sizex;
- 		}
+		MPI_File_read_all(file, &type, 1, MPI_CHAR, &status);
+		MPI_File_read_all(file, &mb, 1, MPI_UNSIGNED_LONG_LONG, &status);
+		MPI_File_read_all(file, &nb, 1, MPI_UNSIGNED_LONG_LONG, &status);
+		int n = nb;
+		int m = mb;
+		int bpartx;
+		int bparty;
+		if ( coords[0] != sizex - 1) {
+			bparty = mb / sizex;
+		} else {
+			bparty = mb / sizex + mb % sizex;
+		}
 
- 		if ( coords[1] != sizey - 1) {
- 			bpartx = nb / sizey;
- 		} else {
- 			bpartx = nb / sizey + nb % sizey;
- 		}
+		if ( coords[1] != sizey - 1) {
+			bpartx = nb / sizey;
+		} else {
+			bpartx = nb / sizey + nb % sizey;
+		}
 
- 		int startx = coords[1] * nb / sizex;
- 		MPI_Type_create_subarray(1,  &n, &bpartx, &startx, MPI_ORDER_C, MPI_DOUBLE, &filetype);
- 		MPI_Type_commit(&filetype);
+		int startx = coords[1] * nb / sizex;
+		MPI_Type_create_subarray(1,  &n, &bpartx, &startx, MPI_ORDER_C, MPI_DOUBLE, &filetype);
+		MPI_Type_commit(&filetype);
 
- 		int temp = mb /sizey;
- 		int offset = 2 * sizeof(uint64_t) + sizeof (char) + sizeof(double) * n * temp  * coords[0] ; 
- 		MPI_File_set_view(file, offset, MPI_DOUBLE, filetype, "native", MPI_INFO_NULL);
- 		double matrb[bparty][bpartx];
- 		for(int i = 0 ; i < bparty; ++i) {
- 			MPI_File_read(file, &matrb[i][0], bpartx, MPI_DOUBLE, &status);
- 		}
- 		MPI_File_close(&file);
+		int temp = mb /sizey;
+		int offset = 2 * sizeof(uint64_t) + sizeof (char) + sizeof(double) * n * temp  * coords[0] ; 
+		MPI_File_set_view(file, offset, MPI_DOUBLE, filetype, "native", MPI_INFO_NULL);
+		double matrb[bparty][bpartx];
+		for(int i = 0 ; i < bparty; ++i) {
+			MPI_File_read(file, &matrb[i][0], bpartx, MPI_DOUBLE, &status);
+		}
+		MPI_File_close(&file);
 
- 		
 
- 		int sendtorank;
- 		int sendtocoord[3] = {coords[0], coords[1], coords[0]};
- 		MPI_Cart_rank(cube, sendtocoord, &sendtorank);
- 		int bbufsizes[2] = {bpartx, bparty};
- 		MPI_Send(bbufsizes, 2, MPI_INT, sendtorank, tagsizebuf, cube);
- 		for(int j = 0 ; j < bparty; ++j) {
- 			MPI_Send(&matrb[j][0], bpartx, MPI_DOUBLE, sendtorank, tagmatrb, cube);
- 		}
- 	}
 
- 	int bbufsizes[2] = { -1 , -1 };
- 	int bpartx, bparty;
+		int sendtorank;
+		int sendtocoord[3] = {coords[0], coords[1], coords[0]};
+		MPI_Cart_rank(cube, sendtocoord, &sendtorank);
+		int bbufsizes[2] = {bpartx, bparty};
+		MPI_Send(bbufsizes, 2, MPI_INT, sendtorank, tagsizebuf, cube);
+		for(int j = 0 ; j < bparty; ++j) {
+			MPI_Send(&matrb[j][0], bpartx, MPI_DOUBLE, sendtorank, tagmatrb, cube);
+		}
+	}
 
- 	if (coords[0] == coords[2]) {
+	int bbufsizes[2] = { -1 , -1 };
+	int bpartx, bparty;
 
- 		int sendfrom;
- 		int sendfromcoords[3] = {coords[0],coords[1],0};
- 		MPI_Cart_rank(cube, sendfromcoords, &sendfrom);
- 		MPI_Recv(&bbufsizes, 2, MPI_INT, sendfrom, tagsizebuf, cube, &status);
- 		bpartx = bbufsizes[0];
- 		bparty = bbufsizes[1];
- 	}
+	if (coords[0] == coords[2]) {
 
- 	MPI_Cart_rank(linex, bcastcoords, &bcastroot);
- 	MPI_Bcast(bbufsizes, 2, MPI_INT, bcastroot, linex);
- 	bpartx = bbufsizes[0];
- 	bparty = bbufsizes[1];
- 	double matrb[bparty][bpartx];
+		int sendfrom;
+		int sendfromcoords[3] = {coords[0],coords[1],0};
+		MPI_Cart_rank(cube, sendfromcoords, &sendfrom);
+		MPI_Recv(&bbufsizes, 2, MPI_INT, sendfrom, tagsizebuf, cube, &status);
+		bpartx = bbufsizes[0];
+		bparty = bbufsizes[1];
+	}
 
- 	if (coords[0] == coords[2]) {
+	MPI_Cart_rank(linex, bcastcoords, &bcastroot);
+	MPI_Bcast(bbufsizes, 2, MPI_INT, bcastroot, linex);
+	bpartx = bbufsizes[0];
+	bparty = bbufsizes[1];
+	double matrb[bparty][bpartx];
 
- 		int sendfrom;
- 		int sendfromcoords[3] = {coords[0],coords[1],0};
- 		MPI_Cart_rank(cube, sendfromcoords, &sendfrom);
+	if (coords[0] == coords[2]) {
 
- 		for(int j = 0 ; j < bparty; ++j) {
- 			MPI_Recv(&matrb[j][0], bpartx, MPI_DOUBLE, sendfrom, tagmatrb, cube, &status);
- 		}
- 	}
+		int sendfrom;
+		int sendfromcoords[3] = {coords[0],coords[1],0};
+		MPI_Cart_rank(cube, sendfromcoords, &sendfrom);
 
- 	for(int j = 0 ; j < bparty; ++j) {
- 		MPI_Bcast(&matrb[j][0], bpartx, MPI_DOUBLE, bcastroot, linex);
- 	}
+		for(int j = 0 ; j < bparty; ++j) {
+			MPI_Recv(&matrb[j][0], bpartx, MPI_DOUBLE, sendfrom, tagmatrb, cube, &status);
+		}
+	}
+
+	for(int j = 0 ; j < bparty; ++j) {
+		MPI_Bcast(&matrb[j][0], bpartx, MPI_DOUBLE, bcastroot, linex);
+	}
 
 
  	/*if (coords[0] == sizex - 2 && coords[1] == sizey - 1 && coords[2] == sizez - 2) {
@@ -234,24 +234,89 @@ int main(int argc, char **argv) {
  	*/
  	//matr b ready
 
- 	double matrclocal[party][bpartx];
- 	if(bparty != partx) {
- 		cout << "cant multyply " << bpartx << ' ' <<party << ' ' << coords[0] << ' ' << coords[1] << ' ' <<coords[2] <<endl;
+	double matrclocal[party][bpartx];
+	if(bparty != partx) {
+		cout << "cant multyply " << bpartx << ' ' <<party << ' ' << coords[0] << ' ' << coords[1] << ' ' <<coords[2] <<endl;
  		//exit(0);
- 	} else {
- 		
+	} else {
+
+		for(int i = 0 ; i < party; ++i) {
+			for(int j = 0 ; j < bpartx; ++j) {
+				matrclocal[i][j] = 0;
+			}
+		}
+		for(int i = 0 ; i < party; ++i) {
+			for(int k = 0 ; k < bparty; ++k) {
+				for (int j = 0; j < bpartx; ++j) {
+					matrclocal[i][j] += matra[i][k] * matrb[k][j];
+				}
+			}
+		}
+	}
+
+	double matrc[party][bpartx];
+	int rankcmatr;
+	int rootcoord[1] = { 0 } ;
+	MPI_Cart_rank(linez, rootcoord, &rankcmatr);
+
+	for(int j = 0 ; j < party; ++j) {
+		MPI_Reduce(&matrclocal[j][0], &matrc[j][0], bpartx, MPI_DOUBLE, MPI_SUM, rankcmatr, linez);
+	}
+
+	/*if (coords[0] == 0 && coords[1] == 0 && coords[2] == 0) {
  		for(int i = 0 ; i < party; ++i) {
- 			for(int j = 0 ; j < bpartx; ++j) {
- 				matrclocal[i][j] = 0;
+ 			for (int j = 0 ; j < bpartx; ++j) {
+ 				cout << matrc[i][j] << ' ';
  			}
+ 			cout << endl;
  		}
- 		for(int i = 0 ; i < party; ++i) {
- 			for(int k = 0 ; k < bparty; ++k) {
- 				for (int j = 0; j < bpartx; ++j) {
- 					matrclocal[i][j] += matra[i][k] * matrb[k][j];
- 				}
- 			}
- 		}
+ 	}*/
+
+ 	MPI_Comm_rank(cube, &rank);
+
+ 	if (rank == 0) {
+ 		cout << coords[0] << ' ' << coords[1] <<' ' << coords[2] << " rank 0" <<endl;
+ 		MPI_File file;
+		MPI_File_open(MPI_COMM_SELF, argv[3], MPI_MODE_WRONLY | MPI_MODE_CREATE, MPI_INFO_NULL, &file);
+		char type = 'd';
+		MPI_File_write(file, &type, 1, MPI_CHAR, &status);
+		MPI_File_write(file, &ma, 1, MPI_UNSIGNED_LONG_LONG, &status);
+		MPI_File_write(file, &nb, 1, MPI_UNSIGNED_LONG_LONG, &status);
+ 		perror("A");
+		MPI_File_close(&file);
+		perror("B");
+ 	}
+ 	if (coords[2] == 0) {
+			cout << coords[0] << ' ' << coords[1] <<' ' << coords[2] <<endl;
+ 		MPI_File file;
+ 		fflush(stdout);
+		MPI_File_open(square, argv[3], MPI_MODE_WRONLY, MPI_INFO_NULL, &file);
+ 		if ( coords[0] != sizex - 1) {
+			party = ma / sizex;
+		} else {
+			party = ma / sizex + ma % sizex;
+		}
+
+		if ( coords[1] != sizey - 1) {
+			partx = nb / sizey;	
+		} else {
+			partx = nb / sizey + nb % sizey;
+		}
+		int n = nb;
+		int startx = coords[1] * (nb / sizex);
+		MPI_Type_create_subarray(1,  &n, &partx, &startx, MPI_ORDER_C, MPI_DOUBLE, &filetype);
+		MPI_Type_commit(&filetype);
+
+ 		cout << "tut" << endl;
+ 		fflush(stdout);
+		int offset = 2 * sizeof(uint64_t) + sizeof (char) + sizeof(double) * n * (ma / sizey) * coords[0]; 
+		MPI_File_set_view(file, offset, MPI_DOUBLE, filetype, "native", MPI_INFO_NULL);
+		for(int i = 0 ; i < party; ++i) {
+			fflush(stdout);
+			MPI_File_write(file, &matrc[i][0], partx, MPI_DOUBLE, &status);
+		}
+
+		MPI_File_close(&file);
  	}
 
  	/*if (coords[0] == sizex - 1 && coords[1] == sizey - 1 && coords[2] == sizez - 1) {
