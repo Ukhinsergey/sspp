@@ -275,19 +275,15 @@ int main(int argc, char **argv) {
  	MPI_Comm_rank(cube, &rank);
 
  	if (rank == 0) {
- 		cout << coords[0] << ' ' << coords[1] <<' ' << coords[2] << " rank 0" <<endl;
  		MPI_File file;
 		MPI_File_open(MPI_COMM_SELF, argv[3], MPI_MODE_WRONLY | MPI_MODE_CREATE, MPI_INFO_NULL, &file);
 		char type = 'd';
 		MPI_File_write(file, &type, 1, MPI_CHAR, &status);
 		MPI_File_write(file, &ma, 1, MPI_UNSIGNED_LONG_LONG, &status);
 		MPI_File_write(file, &nb, 1, MPI_UNSIGNED_LONG_LONG, &status);
- 		perror("A");
-		MPI_File_close(&file);
-		perror("B");
+		MPI_File_close(&file);	
  	}
  	if (coords[2] == 0) {
-			cout << coords[0] << ' ' << coords[1] <<' ' << coords[2] <<endl;
  		MPI_File file;
  		fflush(stdout);
 		MPI_File_open(square, argv[3], MPI_MODE_WRONLY, MPI_INFO_NULL, &file);
@@ -307,12 +303,9 @@ int main(int argc, char **argv) {
 		MPI_Type_create_subarray(1,  &n, &partx, &startx, MPI_ORDER_C, MPI_DOUBLE, &filetype);
 		MPI_Type_commit(&filetype);
 
- 		cout << "tut" << endl;
- 		fflush(stdout);
 		int offset = 2 * sizeof(uint64_t) + sizeof (char) + sizeof(double) * n * (ma / sizey) * coords[0]; 
 		MPI_File_set_view(file, offset, MPI_DOUBLE, filetype, "native", MPI_INFO_NULL);
 		for(int i = 0 ; i < party; ++i) {
-			fflush(stdout);
 			MPI_File_write(file, &matrc[i][0], partx, MPI_DOUBLE, &status);
 		}
 
