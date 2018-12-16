@@ -22,5 +22,7 @@ test: main compare
 	mpirun -np 27 main "./../test/A.dat" "./../test/B.dat" "./../test/C1.dat" 
 	./compare "./../test/C0.dat" "./../test/C.dat"
 	./compare "./../test/C1.dat" "./../test/C.dat"
+	rm "./../test/C0.dat"
+	rm "./../test/C1.dat"
 clean : 
 	rm -f *.dat *.txt  *.svg print generate main random compare *.map
