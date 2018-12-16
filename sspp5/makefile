@@ -23,4 +23,4 @@ test: main compare
 	./compare "./../test/C0.dat" "./../test/C.dat"
 	./compare "./../test/C1.dat" "./../test/C.dat"
 clean : 
-	rm -f *.dat *.txt  *.svg print generate main random *.map
+	rm -f *.dat *.txt  *.svg print generate main random compare *.map
