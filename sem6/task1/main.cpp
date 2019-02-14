@@ -13,7 +13,7 @@ using namespace std;
 
 
 
-complexd *qubit_transform(complexd *a, int n, complexd **u, int k, double dlina) {
+complexd *qubit_transform(complexd *a, int n, complexd **u, int k) {
 	int num_qubits = 1 << n;
 	int temp = 1 << (n - k); //(int) pow(2, n - k);
 	complexd *b = new complexd[num_qubits];
@@ -21,7 +21,7 @@ complexd *qubit_transform(complexd *a, int n, complexd **u, int k, double dlina)
 	{	
 		#pragma omp for 
 		for(int i = 0 ; i < num_qubits; ++i) {
-		b[i] = (u[(i & temp) >> (n - k)][1] * a[ i | temp] + u[(i & temp) >> (n - k)][0] * a[(i | temp) ^ temp]) / dlina; // 
+		b[i] = u[(i & temp) >> (n - k)][1] * a[ i | temp] + u[(i & temp) >> (n - k)][0] * a[(i | temp) ^ temp]; // 
 		}
 	}
 	
@@ -72,10 +72,14 @@ int main(int argc, char **argv) {
 			dlina += norm(a[i]);
 		} 
 	}
+	dlina = sqrt(dlina);
+	for(int i = 0; i < num_qubits; ++i) {
+		a[i] = a[i] / dlina;
+	}
 	end_time1 = omp_get_wtime();
 	start_time2 = omp_get_wtime();
 
-	complexd *b = qubit_transform(a,n,u,k, sqrt(dlina));
+	complexd *b = qubit_transform(a,n,u,k);
 	end_time2 = omp_get_wtime(); 
 	cout << "work time: " << end_time1 - start_time1 <<' ' << end_time2 - start_time2 << endl;
 
