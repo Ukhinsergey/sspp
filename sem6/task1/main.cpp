@@ -60,9 +60,11 @@ int main(int argc, char **argv) {
 	complexd *a = new complexd[num_qubits];
 	start_time1 = omp_get_wtime();
 	double dlina = 0;
+	srand(omp_get_wtime());
+	int seedtemp = rand();
 	#pragma omp parallel
 	{
-		unsigned int seed = omp_get_thread_num();
+		unsigned int seed = seedtemp * omp_get_thread_num();
 		#pragma omp for reduction(+ : dlina)
 		for(int i = 0 ; i < num_qubits; ++i) {
 			a[i] = complexd(((double)rand_r(&seed))/RAND_MAX * MAXD, ((double)rand_r(&seed))/RAND_MAX * MAXD);	
