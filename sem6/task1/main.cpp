@@ -73,6 +73,7 @@ int main(int argc, char **argv) {
 		} 
 	}
 	dlina = sqrt(dlina);
+	#pragma omp for 
 	for(int i = 0; i < num_qubits; ++i) {
 		a[i] = a[i] / dlina;
 	}
@@ -84,12 +85,12 @@ int main(int argc, char **argv) {
 	cout << "work time: " << end_time1 - start_time1 <<' ' << end_time2 - start_time2 << endl;
 
 	
-	/*ofstream out("out.txt");
+	ofstream out("out.txt");
 	for(int i = 0 ; i < num_qubits; ++i) {
 		out << i << ' ' << b[i] << ' ' << endl;
 	}
 	out.close();
-	*/
+	
 
 	for(int i = 0 ; i < 2; ++i) {
 		delete [] u[i];
