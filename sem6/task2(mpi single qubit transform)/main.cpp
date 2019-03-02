@@ -55,13 +55,15 @@ complexd *qubit_transform(complexd *a, long  n, complexd **u, long k, long powpr
 
 int main(int argc, char **argv) {
 	if( argc != 4) {
-		cout << "input: n, k, numtreads" << endl;
+		cout << "input: n k mode (1-file \"input.bin\" , 2-random)" << endl;
 		return 0;
 	}
 	double start_time1, start_time2, end_time1, end_time2;
 	long n, k;
+	int mode;
 	sscanf(argv[1], "%ld", &n);
 	sscanf(argv[2], "%ld", &k);
+	sscanf(argv[3], "%d", &mode);
 	complexd **u= new complexd *[2];
 	for(int i = 0; i < 2; ++i) {
 		u[i] = new complexd[2];
@@ -94,22 +96,34 @@ int main(int argc, char **argv) {
 
     long vec_length = 1 << (n - powproc); // = 2^n/size (size = 2 ^ powproc)
 	complexd *a = new complexd[vec_length]; 
+	
+
 	start_time1 = MPI_Wtime();
-	double dlina = 0;
-	srand(MPI_Wtime() * (rank + 1));
-	long start = vec_length * rank;
-	for(int i = 0 ; i < vec_length; ++i) {
-		//a[i] = complexd((double)rand()/RAND_MAX * MAXD, (double) rand()/RAND_MAX * MAXD);	
-		a[i] = i + start;
-		dlina += norm(a[i]);
-	} 
-	double temp;
-	MPI_Allreduce(&dlina, &temp, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-	dlina = sqrt(temp); 
-	for(int i = 0; i < vec_length; ++i) {
-		a[i] = a[i] / dlina;
+	
+	if (mode == 2) {
+		double dlina = 0;
+		srand(MPI_Wtime() * (rank + 1));
+		long start = vec_length * rank;
+		for(int i = 0 ; i < vec_length; ++i) {
+			a[i] = complexd((double)rand()/RAND_MAX * MAXD, (double) rand()/RAND_MAX * MAXD);	
+			//a[i] = i + start;
+			dlina += norm(a[i]);
+		} 
+		double temp;
+		MPI_Allreduce(&dlina, &temp, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+		dlina = sqrt(temp); 
+		for(int i = 0; i < vec_length; ++i) {
+			a[i] = a[i] / dlina;
+		}
+	} else {
+
 	}
+	
 	end_time1 = MPI_Wtime();
+	
+
+
+
 	start_time2 = MPI_Wtime();
 
 
