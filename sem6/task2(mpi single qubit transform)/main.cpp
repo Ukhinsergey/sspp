@@ -109,8 +109,8 @@ int main(int argc, char **argv) {
 		srand(MPI_Wtime() * (rank + 1));
 		long start = vec_length * rank;
 		for(int i = 0 ; i < vec_length; ++i) {
-			//a[i] = complexd((double)rand()/RAND_MAX * MAXD, (double) rand()/RAND_MAX * MAXD);	
-			a[i] = i + start;
+			a[i] = complexd((double)rand()/RAND_MAX * MAXD, (double) rand()/RAND_MAX * MAXD);	
+			//a[i] = i + start;
 			dlina += norm(a[i]);
 		} 
 		double temp;
