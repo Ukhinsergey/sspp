@@ -9,13 +9,13 @@ using namespace std;
 
 int main(int argc, char **argv)
 {
-	if (argc !=2) {
-		cout << " format : input.bin" << endl;
+	if (argc != 3) {
+		cout << " format : input.bin output.txt " << endl;
 		return 0;
 	}
 
 	fstream fin(argv[1], ios::in | ios::binary);
-	fstream fout("input.txt", ios::out | ios::trunc);
+	fstream fout(argv[2], ios::out | ios::trunc);
 	int n;
 	fin.read((char *) &n, sizeof(n));
 	fout << n << endl;

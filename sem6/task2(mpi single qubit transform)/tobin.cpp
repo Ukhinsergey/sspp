@@ -9,13 +9,13 @@ using namespace std;
 int main(int argc, char **argv) 
 {
 	if (argc != 2) {
-		cout << " format: in.txt" ;
+		cout << " format: in.txt in.bin" ;
 		return 0;
 	}
 	fstream filein(argv[1]);
 	int n;
 	filein >> n;
-	fstream fout("input.bin", ios::out | ios::binary | ios::trunc);
+	fstream fout(argv[2], ios::out | ios::binary | ios::trunc);
 	fout.write((char *) &n, sizeof(n));
 	long vec_length = 1 << n;
 	for(int i = 0 ; i < vec_length; ++i) {

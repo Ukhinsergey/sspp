@@ -13,7 +13,7 @@ using namespace std;
 
 
 
-complexd *qubit_transform(complexd *a, long  n, complexd **u, long k, long powproc,int rank) {
+complexd *qubit_transform(complexd *a, int  n, complexd **u, int  k, long powproc,int rank) {
 	long vec_length = 1 << (n - powproc);
 	long dist = 1 << (n - k);
 	long start = vec_length * rank; // 2*n*rank/size (part number of the whole vector)
@@ -55,15 +55,16 @@ complexd *qubit_transform(complexd *a, long  n, complexd **u, long k, long powpr
 
 int main(int argc, char **argv) {
 	if( argc != 4) {
-		cout << "input: n k mode (1-file \"input.bin\" , 2-random)" << endl;
+		cout << "input: n k mode (1-file \"in.bin\" , 2-random)" << endl;
 		return 0;
 	}
 	double start_time1, start_time2, end_time1, end_time2;
-	long n, k;
+	int n, k;
 	int mode;
-	sscanf(argv[1], "%ld", &n);
-	sscanf(argv[2], "%ld", &k);
+	sscanf(argv[1], "%d", &n);
+	sscanf(argv[2], "%d", &k);
 	sscanf(argv[3], "%d", &mode);
+
 	complexd **u= new complexd *[2];
 	for(int i = 0; i < 2; ++i) {
 		u[i] = new complexd[2];
@@ -84,7 +85,10 @@ int main(int argc, char **argv) {
 	MPI_Init(&argc, &argv);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-
+	MPI_Status status;
+	MPI_Datatype filetype;
+	MPI_File file;
+	
     int powproc = 0;
 
     for(int i = 0 ; i < 10; ++i) {
@@ -105,8 +109,8 @@ int main(int argc, char **argv) {
 		srand(MPI_Wtime() * (rank + 1));
 		long start = vec_length * rank;
 		for(int i = 0 ; i < vec_length; ++i) {
-			a[i] = complexd((double)rand()/RAND_MAX * MAXD, (double) rand()/RAND_MAX * MAXD);	
-			//a[i] = i + start;
+			//a[i] = complexd((double)rand()/RAND_MAX * MAXD, (double) rand()/RAND_MAX * MAXD);	
+			a[i] = i + start;
 			dlina += norm(a[i]);
 		} 
 		double temp;
@@ -115,8 +119,27 @@ int main(int argc, char **argv) {
 		for(int i = 0; i < vec_length; ++i) {
 			a[i] = a[i] / dlina;
 		}
-	} else {
 
+	} else {
+		int s = 1;
+		int p = 0;
+		MPI_Type_create_subarray(1,  &s, &s, &p, MPI_ORDER_C, MPI_DOUBLE, &filetype);
+    	MPI_Type_commit(&filetype);
+    	int offset = sizeof(int) + vec_length * 2 * rank * sizeof(double);
+    	MPI_File_open(MPI_COMM_WORLD, "in.bin", MPI_MODE_RDONLY, MPI_INFO_NULL, &file);
+		MPI_File_set_view(file, offset, MPI_DOUBLE, filetype, "native", MPI_INFO_NULL);
+		MPI_File_read_all(file, a, vec_length * 2, MPI_DOUBLE, &status);
+		MPI_File_close(&file);
+		double dlina = 0;
+		for(int i = 0 ; i < vec_length; ++i) {
+			dlina += norm(a[i]);
+		} 
+		double temp;
+		MPI_Allreduce(&dlina, &temp, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+		dlina = sqrt(temp); 
+		for(int i = 0; i < vec_length; ++i) {
+			a[i] = a[i] / dlina;
+		}
 	}
 	
 	end_time1 = MPI_Wtime();
@@ -126,15 +149,11 @@ int main(int argc, char **argv) {
 
 	start_time2 = MPI_Wtime();
 
-
-
 	complexd *b = qubit_transform(a,n,u,k, powproc, rank);
 	
+	end_time2 = MPI_Wtime();
 
 
-	//cout << "rank :" << rank << endl;
-
-	end_time2 = MPI_Wtime(); 
 	double time1 = end_time1 - start_time1;
 	double time2 = end_time2 - start_time2;
 	double timelocal = time1 + time2;
@@ -146,14 +165,26 @@ int main(int argc, char **argv) {
 		cout << "sumtime1: " << sumtime1 <<" sumtime2: " << sumtime2 << " maxtime: " << maxtime << endl;
 	}
 	
-	//ofstream out("out.txt");
-	/*if (rank == 0) {
-		for(int i = 0 ; i < vec_length; ++i) {
-			cout << i + start << ' ' << b[i] << ' ' << endl;
-		}
+	//file output
+	
+	int s = 1;
+	int p = 0;
+	MPI_Type_create_subarray(1,  &s, &s, &p, MPI_ORDER_C, MPI_DOUBLE, &filetype);
+    MPI_Type_commit(&filetype);
+    int offset = sizeof(int) + vec_length * 2 * rank * sizeof(double);
+	if( rank == 0) {
+		MPI_File_open(MPI_COMM_SELF, "out.bin", MPI_MODE_WRONLY | MPI_MODE_CREATE, MPI_INFO_NULL, &file);
+		MPI_File_write(file, &n, 1, MPI_INT, &status);
+		MPI_File_close(&file);
 	}
-	*/	
-	//out.close();
+	MPI_File_open(MPI_COMM_WORLD, "out.bin", MPI_MODE_WRONLY | MPI_MODE_CREATE, MPI_INFO_NULL, &file);
+	MPI_File_set_view(file, offset, MPI_DOUBLE, filetype, "native", MPI_INFO_NULL);
+	MPI_File_write_all(file, b, vec_length * 2, MPI_DOUBLE, &status);
+	MPI_File_close(&file);
+	
+
+
+	
 	
 
 	for(int i = 0 ; i < 2; ++i) {
