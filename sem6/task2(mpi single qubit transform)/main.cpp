@@ -101,12 +101,16 @@ int main(int argc, char **argv) {
     long vec_length = 1 << (n - powproc); // = 2^n/size (size = 2 ^ powproc)
 	complexd *a = new complexd[vec_length]; 
 	
-
+	double timetemp;
+	if(rank == 0) {
+		timetemp = MPI_Wtime ();
+	}
+	MPI_Bcast(&timetemp, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 	start_time1 = MPI_Wtime();
 	
 	if (mode == 2) {
 		double dlina = 0;
-		srand(MPI_Wtime() * (rank + 1));
+		srand(timetemp * (rank + 1));
 		long start = vec_length * rank;
 		for(int i = 0 ; i < vec_length; ++i) {
 			a[i] = complexd((double)rand()/RAND_MAX * MAXD, (double) rand()/RAND_MAX * MAXD);	
