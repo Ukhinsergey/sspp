@@ -40,7 +40,7 @@ complexd *qubit_transform(complexd *a, int  n, complexd **u, int  k, long powpro
     if (dist < vec_length) {
         #pragma omp parallel for
         for(int i = 0; i < vec_length; ++i) {
-            b[i] = u[(i + start) & dist >> (n - k)][0] * a[(((i + start) | dist) ^ dist) - start] + u[((i + start) & dist) >> (n - k)][1] * a[ ((i + start) | dist) - start];
+            b[i] = u[((i + start) & dist) >> (n - k)][0] * a[(((i + start) | dist) ^ dist) - start] + u[((i + start) & dist) >> (n - k)][1] * a[ ((i + start) | dist) - start];
         }
     } else {
         int needrank;
@@ -61,7 +61,7 @@ complexd *qubit_transform(complexd *a, int  n, complexd **u, int  k, long powpro
         }
         #pragma omp parallel for
         for(int i = 0; i < vec_length; ++i) {
-            b[i] = u[(i + start) & dist >> (n - k)][0] * vec0[i] + u[((i + start) & dist) >> (n - k)][1] * vec1[i]; // 
+            b[i] = u[((i + start) & dist) >> (n - k)][0] * vec0[i] + u[((i + start) & dist) >> (n - k)][1] * vec1[i]; // 
         }
         delete []temp;
     }
@@ -101,9 +101,9 @@ int main(int argc, char **argv) {
                 u[i][j] = - 1.0/sqrt(2);
             }
             
-        }
-        
+        }  
     }
+
     int rank, size;
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -136,10 +136,10 @@ int main(int argc, char **argv) {
         #pragma omp parallel
         {
             unsigned int seed = timetemp + omp_get_num_threads() * rank + omp_get_thread_num();
-            #pragma omp for reduction(+ : dlina)
+            //#pragma omp for reduction(+ : dlina)
             for(int i = 0 ; i < vec_length; ++i) {
-                a[i] = complexd((double)rand()/RAND_MAX * MAXD, (double) rand()/RAND_MAX * MAXD);   
-                //a[i] = i + start;
+                //a[i] = complexd((double)rand()/RAND_MAX * MAXD, (double) rand()/RAND_MAX * MAXD);   
+                a[i] = i + start;
                 dlina += norm(a[i]);
             } 
         }
@@ -173,12 +173,13 @@ int main(int argc, char **argv) {
             a[i] = a[i] / dlina;
         }
     }
-    
+    /*
     complexd d = 0;
     for(int i = 0; i < vec_length; ++i) {
             d += abs(a[i] * a[i]);
     }
     cout << d << endl;
+    */
     //end_time1 = MPI_Wtime();
 
     double sum = 0;
@@ -186,7 +187,21 @@ int main(int argc, char **argv) {
     for(int i = 0; i < 2; ++i) {
         un[i] = new complexd[2];
     }
-    for(int j = 0; j < 90; ++j) {
+
+
+
+    complexd *bnorm = qubit_transform(a, n, u, 1, powproc, rank);
+
+    complexd * temp;
+    for(int i = 2; i <= n; ++i) {
+        temp = bnorm;
+        bnorm = qubit_transform(temp, n, u, i, powproc, rank);
+        delete[] temp;
+    }
+    
+
+
+    for(int j = 0; j < 60; ++j) {
         double ksin[n];
         if (rank == 0) {
             for (int i = 0 ; i < n ; ++i) {
@@ -195,44 +210,39 @@ int main(int argc, char **argv) {
             }
         }
         MPI_Bcast(ksin, n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-
-       
+        
             //start_time2 = omp_get_wtime();
         unoisy(u, un, ksin[0]);
 
         complexd *b = qubit_transform(a, n, un, 1, powproc, rank);
 
-        complexd *bnorm = qubit_transform(a, n, u, 1, powproc, rank);
-        complexd * temp;
         for(int i = 2; i <= n; ++i) {
             temp = b;
             unoisy(u, un, ksin[i-1]);
             b = qubit_transform(temp, n, un, i, powproc, rank);
-            delete[] temp;
-            temp = bnorm;
-            bnorm = qubit_transform(temp, n, u, i, powproc, rank);
-            delete[] temp;
-            
+            delete[] temp;              
         }
         
         complexd c = 0;
         for(int i = 0; i < vec_length; ++i) {
-            c += abs(b[i] * bnorm[i]);
+            c += abs(b[i] * conj(bnorm[i]));
         }
-        c = c * c;
+        c = c;
         double tempsum = c.real();
         sum += c.real();
+        
         double res;
         MPI_Allreduce(&tempsum, &res, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
         if (rank == 0) {
+        }
+        if (rank == 0) {
             fstream fout("answer", ios::out | ios::app);
-            fout << res << endl;
+            fout << 1 -  res * res << endl;
             fout.close();
         }
         delete []b;
-        delete []bnorm;
     }
-    cout <<1 -  sum / 90 << endl;
+    //cout <<1 -  sum / 90 << endl;
     //end_time2 = omp_get_wtime();
     /*
     double time1 = end_time1 - start_time1;
@@ -272,6 +282,7 @@ int main(int argc, char **argv) {
         delete [] u[i];
         delete [] un[i];
     }
+    delete []bnorm;
     delete []a;
     delete []un;
     delete []u;
