@@ -79,10 +79,10 @@ int main(int argc, char **argv) {
     if (mode == 2) {
         double dlina = 0;
         long start = vec_length * rank;
-        //#pragma omp parallel
+        #pragma omp parallel
         {
             unsigned int seed = timetemp + omp_get_num_threads() * rank + omp_get_thread_num();
-            //#pragma omp for reduction(+ : dlina)
+            #pragma omp for reduction(+ : dlina)
             for(int i = 0 ; i < vec_length; ++i) {
                 //a[i] = complexd((double)rand()/RAND_MAX * MAXD, (double) rand()/RAND_MAX * MAXD);   
                 a[i] = i + start;
@@ -93,7 +93,7 @@ int main(int argc, char **argv) {
         double temp;
         MPI_Allreduce(&dlina, &temp, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
         dlina = sqrt(temp); 
-        //#pragma omp parallel for
+        #pragma omp parallel for
         for(int i = 0; i < vec_length; ++i) {
             a[i] = a[i] / dlina;
         }
@@ -109,25 +109,25 @@ int main(int argc, char **argv) {
         MPI_File_read_all(file, a, vec_length * 2, MPI_DOUBLE, &status);
         MPI_File_close(&file);
         double dlina = 0;
-        //#pragma omp parallel for reduction(+ : dlina)
+        #pragma omp parallel for reduction(+ : dlina)
         for(int i = 0 ; i < vec_length; ++i) {
             dlina += norm(a[i]);
         } 
         double temp;
         MPI_Allreduce(&dlina, &temp, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
         dlina = sqrt(temp); 
-        //#pragma omp parallel for
+        #pragma omp parallel for
         for(int i = 0; i < vec_length; ++i) {
             a[i] = a[i] / dlina;
         }
     }
     
 
-    
+    /*
     for(int i = 0; i < vec_length; ++i) {
             cout << a[i] << endl;
     }
-    
+    */
 
     /*
     double dlina = 0;
@@ -137,7 +137,7 @@ int main(int argc, char **argv) {
     } 
     cout << dlina << endl;
     */
-    complexd *b = C_not(a, n, q1, q2, powproc, rank);
+    complexd *b = Hadamar(a, n, q1, powproc, rank);
 
 
     int s = 1;

@@ -19,8 +19,8 @@ using namespace std;
 
 
 int main(int argc, char **argv) {
-    if( argc != 7) {
-        cout << "input: n q1 q2 mode(1-file \"in.bin\" , 2-random) numtreads, out.bin" << endl;
+    if( argc != 8) {
+        cout << "input: n q1 q2 mode(1-file \"in.bin\" , 2-random) numtreads, out.bin , phi" << endl;
         return 0;
     }
     srand(time(NULL));
@@ -32,6 +32,8 @@ int main(int argc, char **argv) {
     sscanf(argv[3], "%d", &q2);
     sscanf(argv[4], "%d", &mode);
     sscanf(argv[5], "%d", &numtreads);
+    double phi;
+    sscanf(argv[7], "%lf", &phi);
     omp_set_num_threads(numtreads);
 
     complexd **u= new complexd *[2];
@@ -79,10 +81,10 @@ int main(int argc, char **argv) {
     if (mode == 2) {
         double dlina = 0;
         long start = vec_length * rank;
-        //#pragma omp parallel
+        #pragma omp parallel
         {
             unsigned int seed = timetemp + omp_get_num_threads() * rank + omp_get_thread_num();
-            //#pragma omp for reduction(+ : dlina)
+            #pragma omp for reduction(+ : dlina)
             for(int i = 0 ; i < vec_length; ++i) {
                 //a[i] = complexd((double)rand()/RAND_MAX * MAXD, (double) rand()/RAND_MAX * MAXD);   
                 a[i] = i + start;
@@ -93,7 +95,7 @@ int main(int argc, char **argv) {
         double temp;
         MPI_Allreduce(&dlina, &temp, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
         dlina = sqrt(temp); 
-        //#pragma omp parallel for
+        #pragma omp parallel for
         for(int i = 0; i < vec_length; ++i) {
             a[i] = a[i] / dlina;
         }
@@ -109,24 +111,25 @@ int main(int argc, char **argv) {
         MPI_File_read_all(file, a, vec_length * 2, MPI_DOUBLE, &status);
         MPI_File_close(&file);
         double dlina = 0;
-        //#pragma omp parallel for reduction(+ : dlina)
+        #pragma omp parallel for reduction(+ : dlina)
         for(int i = 0 ; i < vec_length; ++i) {
             dlina += norm(a[i]);
         } 
         double temp;
         MPI_Allreduce(&dlina, &temp, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
         dlina = sqrt(temp); 
-        //#pragma omp parallel for
+        #pragma omp parallel for
         for(int i = 0; i < vec_length; ++i) {
             a[i] = a[i] / dlina;
         }
     }
     
 
-    
+    /*
     for(int i = 0; i < vec_length; ++i) {
             cout << a[i] << endl;
     }
+    */
     
 
     /*
@@ -137,7 +140,7 @@ int main(int argc, char **argv) {
     } 
     cout << dlina << endl;
     */
-    complexd *b = C_not(a, n, q1, q2, powproc, rank);
+    complexd *b = Rw(a, n, q1, powproc, rank, phi);
 
 
     int s = 1;

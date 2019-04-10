@@ -1,6 +1,9 @@
+#include <complex>
+#include "mpi.h"
+#include <omp.h>
 
 
-
+typedef std::complex<double> complexd;
 
 complexd *qubit_transform(complexd *a, int  n, complexd u[2][2], int  k, long powproc, int rank) {
     long vec_length = 1 << (n - powproc);
@@ -8,7 +11,7 @@ complexd *qubit_transform(complexd *a, int  n, complexd u[2][2], int  k, long po
     long start = vec_length * rank; // 2*n*rank/size (part number of the whole vector)
     complexd *b = new complexd[vec_length];
     if (dist < vec_length) {
-        //#pragma omp parallel for
+        #pragma omp parallel for
         for(int i = 0; i < vec_length; ++i) {
             b[i] = u[((i + start) & dist) >> (n - k)][0] * a[(((i + start) | dist) ^ dist) - start] + u[((i + start) & dist) >> (n - k)][1] * a[ ((i + start) | dist) - start];
         }
@@ -29,7 +32,7 @@ complexd *qubit_transform(complexd *a, int  n, complexd u[2][2], int  k, long po
             vec0 = temp;
             vec1 = a;
         }
-        //#pragma omp parallel for
+        #pragma omp parallel for
         for(int i = 0; i < vec_length; ++i) {
             b[i] = u[((i + start) & dist) >> (n - k)][0] * vec0[i] + u[((i + start) & dist) >> (n - k)][1] * vec1[i]; // 
         }
