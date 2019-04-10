@@ -123,10 +123,11 @@ int main(int argc, char **argv) {
     }
     
 
-    
+    /*
     for(int i = 0; i < vec_length; ++i) {
             cout << a[i] << endl;
     }
+    */
     
 
     /*
