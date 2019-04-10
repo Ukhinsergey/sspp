@@ -6,7 +6,7 @@
 #include <cstdlib>
 #include "mpi.h"
 #include <omp.h>
-
+#include "logic_gate.h"
 typedef std::complex<double> complexd;
 const double MAXD = 232323;
 using namespace std;
@@ -16,7 +16,7 @@ using namespace std;
 
 
 
-complexd *qubit_transform(complexd *a, int  n, complexd u[2][2], int  k, long powproc,int rank) {
+complexd *qubit_transform(complexd *a, int  n, complexd u[2][2], int  k, long powproc, int rank) {
     long vec_length = 1 << (n - powproc);
     long dist = 1 << (n - k);
     long start = vec_length * rank; // 2*n*rank/size (part number of the whole vector)
@@ -88,6 +88,52 @@ complexd *Rw(complexd *a, int  n, int  k, long powproc, int rank, double phi) {
     return qubit_transform(a, n, u, k, powproc, rank);
 }
 
+
+
+
+complexd *TwoQubitsEvolution(complexd *a, int n, int q1, int q2, complexd u[4][4], long powproc, int rank)
+{
+    //n - число кубитов
+    //q1, q2 - номера кубитов, над которыми производится преобразование
+    int shift1 = n - q1;
+    int shift2 = n - q2;
+
+    //Все биты нулевые, за исключением соответсвующего номеру первого изменяемого кубита
+    int pow2q1 = 1 << (shift1);
+    //Все биты нулевые, за исключением соответсвующего номеру второгоизменяемого кубита
+    int pow2q2 = 1 << (shift2);
+
+    long vec_length = 1 << (n - powproc);
+    long start = vec_length * rank; 
+    complexd *b = new complexd[vec_length];
+
+    for (int i = 0; i < vec_length; i++)
+    {
+        //Установка изменяемых битов во все возможные позиции
+        int i00 = i & ~pow2q1 & ~pow2q2;
+        int i01 = i & ~pow2q1 | pow2q2;
+        int i10 = (i | pow2q1) & ~pow2q2;
+        int i11 = i | pow2q1 | pow2q2;
+        
+
+        
+        //Получение значений изменяемых битов
+        int iq1 = (i & pow2q1) >> shift1;
+        int iq2 = (i & pow2q2) >> shift2;
+
+        //Индекс в матрице
+        int iq = (iq1 << 1 ) + iq2;
+        b[i] = u[iq][(0 << 1) + 0] * a[i00] + u[iq][( 0 << 1 ) + 1] * a[i01] + u[iq][( 1 << 1 ) + 0] * a[i10] + u[iq][( 1 << 1 ) + 1] * a[i11];
+    }
+    return b;
+}
+
+complexd *C_not(complexd *a, int  n, int  q1, int q2, long powproc, int rank) {
+    complexd u[4][4];
+    u[0][0] = u[1][1] = u[2][3] = u[3][2] = 1;
+    u[0][1] = u[0][2] = u[0][3] = u[1][0] = u[1][2] = u[1][3] = u[2][0] = u[2][1] = u[2][2] = u[3][0] = u[3][1] = u[3][3] = 0;
+    return TwoQubitsEvolution(a, n, q1, q2,u, powproc, rank);
+}
 
 int main(int argc, char **argv) {
     if( argc != 6) {
@@ -192,20 +238,13 @@ int main(int argc, char **argv) {
             a[i] = a[i] / dlina;
         }
     }
-    /*
-    complexd d = 0;
-    for(int i = 0; i < vec_length; ++i) {
-            d += abs(a[i] * a[i]);
-    }
-    cout << d << endl;
-    */
-    //end_time1 = MPI_Wtime();
+    
 
-    /*double sum = 0;
+    
     for(int i = 0; i < vec_length; ++i) {
             cout << a[i] << endl;
     }
-    */
+    
 
     /*
     double dlina = 0;
@@ -215,7 +254,7 @@ int main(int argc, char **argv) {
     } 
     cout << dlina << endl;
     */
-    complexd *b = Rw(a, n, q1, powproc, rank, 3.1415);
+    complexd *b = C_not(a, n, q1, q2, powproc, rank);
 
 
     int s = 1;

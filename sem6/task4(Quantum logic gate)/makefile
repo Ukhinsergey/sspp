@@ -13,5 +13,5 @@ clean :
 	rm -f *.dat *.txt  *.svg print generate main random compare *.map totxt a.out *.bin tobin
 
 test: main totxt
-	mpirun -n 4 ./main 6 1 1 2 2
+	mpirun -n 1 ./main 2 2 1 2 2
 	./totxt out.bin out.txt
