@@ -35,7 +35,8 @@ int main(int argc, char **argv)
 		fin2.read((char *) &re2, sizeof(re2));
 		fin2.read((char *) &im2, sizeof(im2));
 		if ( re1 != re2 || im1 != im2) {
-			cout << "false 1" << endl;
+			cout << "false 1 i = " << i  << endl;
+			cout << re1 << ' ' << im1 << ' ' << re2 << ' ' << im2 << ' '<<endl;
 			fin1.close();
 			fin2.close();
 			return 0;

@@ -1,4 +1,4 @@
-main: main.cpp
+main: main.cpp logic_gate.h
 	mpicxx -std=c++98 -o main main.cpp -fopenmp
 
 
@@ -16,6 +16,9 @@ N_hadamar: N_hadamar.cpp
 
 Not: Not.cpp
 	mpicxx -std=c++98 -o Not Not.cpp -fopenmp
+
+C_not: C_not.cpp
+	mpicxx -std=c++98 -o C_not C_not.cpp -fopenmp
 
 Rw: Rw.cpp
 	mpicxx -std=c++98 -o Rw Rw.cpp -fopenmp
@@ -83,11 +86,28 @@ testRw: Rw compare
 	./compare test/Rw.bin Rw.bin
 	rm Rw.bin
 
-maketest: testhadamar testN_hadamar testNot testRw
+testC_not: C_not compare
+	mpirun -n 1 ./C_not 6 6 1  2 1 C_not.bin
+	./compare test/C_not.bin C_not.bin
+	mpirun -n 2 ./C_not 6 6 1  2 1 C_not.bin
+	./compare test/C_not.bin C_not.bin
+	mpirun -n 4 ./C_not 6 6 1  2 1 C_not.bin
+	./compare test/C_not.bin C_not.bin
+	mpirun -n 4 ./C_not 6 6 1  2 4 C_not.bin
+	./compare test/C_not.bin C_not.bin
+	mpirun -n 4 ./C_not 6 6 1 2 8 C_not.bin
+	./compare test/C_not.bin C_not.bin
+	mpirun -n 8 ./C_not 6 6 1  2 1 C_not.bin
+	./compare test/C_not.bin C_not.bin
+	mpirun -n 64 ./C_not 6 6 1  2 1 C_not.bin
+	./compare test/C_not.bin C_not.bin
+	rm C_not.bin
+
+maketest: testhadamar testN_hadamar testNot testRw testC_not
 
 clean : 
-	rm -f *.dat *.txt  *.svg print generate main random compare *.map totxt a.out *.bin tobin hadamar N_hadamar Not Rw
+	rm -f *.dat *.txt  *.svg print generate main random compare *.map totxt a.out *.bin tobin hadamar N_hadamar Not Rw C_not
 
 test: main totxt
-	mpirun -n 1 ./main 2 2 1 2 2 out.bin
+	mpirun -n 1 ./C_not 6 6 1 2 1 C_not.bin
 	./totxt out.bin out.txt
