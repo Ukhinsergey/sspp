@@ -1,6 +1,9 @@
+#include <omp.h>
 #include <complex>
 #include "mpi.h"
-#include <omp.h>
+#ifndef SEM6_TASK4_QUANTUM_LOGIC_GATE__LOGIC_GATE_H_
+#define SEM6_TASK4_QUANTUM_LOGIC_GATE__LOGIC_GATE_H_
+#endif //SEM6_TASK4_QUANTUM_LOGIC_GATE__LOGIC_GATE_H_
 
 
 typedef std::complex<double> complexd;
@@ -49,8 +52,11 @@ complexd *TwoQubitsEvolution(complexd *a, int n, int q1, int q2, complexd u[4][4
     int shift1 = n - q1;
     int shift2 = n - q2;
 
+
     //Все биты нулевые, за исключением соответсвующего номеру первого изменяемого кубита
     int pow2q1 = 1 << (shift1);
+
+
     //Все биты нулевые, за исключением соответсвующего номеру второгоизменяемого кубита
     int pow2q2 = 1 << (shift2);
 
@@ -60,7 +66,7 @@ complexd *TwoQubitsEvolution(complexd *a, int n, int q1, int q2, complexd u[4][4
 
     if (pow2q1 < vec_length && pow2q2 < vec_length) {
         #pragma omp parallel for
-        for (int i1 = 0; i1 < vec_length; i1++){
+        for(int i1 = 0; i1 < vec_length; i1++){
             //Установка изменяемых битов во все возможные позиции
             int i = i1 + start;
             int i00 = (i & ~pow2q1 & ~pow2q2) - start;
@@ -68,9 +74,11 @@ complexd *TwoQubitsEvolution(complexd *a, int n, int q1, int q2, complexd u[4][4
             int i10 = ((i | pow2q1) & ~pow2q2) - start;
             int i11 = (i | pow2q1 | pow2q2) - start;
             
+
             //Получение значений изменяемых битов
             int iq1 = (i & pow2q1) >> shift1;
             int iq2 = (i & pow2q2) >> shift2;
+
 
             //Индекс в матрице
             int iq = (iq1 << 1 ) + iq2;
@@ -95,7 +103,7 @@ complexd *TwoQubitsEvolution(complexd *a, int n, int q1, int q2, complexd u[4][4
             vecq2_1 = a;
         }
         #pragma omp parallel for
-        for (int i1 = 0; i1 < vec_length; i1++){
+        for(int i1 = 0; i1 < vec_length; i1++){
             //Установка изменяемых битов во все возможные позиции
             int i = i1 + start;
             int i00 = (i & ~pow2q1) - start;
@@ -103,9 +111,11 @@ complexd *TwoQubitsEvolution(complexd *a, int n, int q1, int q2, complexd u[4][4
             int i10 = (i | pow2q1) - start;
             int i11 = (i | pow2q1) - start;
             
+
             //Получение значений изменяемых битов
             int iq1 = (i & pow2q1) >> shift1;
             int iq2 = (i & pow2q2) >> shift2;
+
 
             //Индекс в матрице
             int iq = (iq1 << 1 ) + iq2;
@@ -131,7 +141,7 @@ complexd *TwoQubitsEvolution(complexd *a, int n, int q1, int q2, complexd u[4][4
             vecq1_1 = a;
         }
         #pragma omp parallel for
-        for (int i1 = 0; i1 < vec_length; i1++){
+        for(int i1 = 0; i1 < vec_length; i1++){
             //Установка изменяемых битов во все возможные позиции
             int i = i1 + start;
             int i00 = (i & ~pow2q2) - start;
@@ -139,9 +149,11 @@ complexd *TwoQubitsEvolution(complexd *a, int n, int q1, int q2, complexd u[4][4
             int i10 = (i & ~pow2q2) - start;
             int i11 = (i | pow2q2) - start;
             
+
             //Получение значений изменяемых битов
             int iq1 = (i & pow2q1) >> shift1;
             int iq2 = (i & pow2q2) >> shift2;
+
 
             //Индекс в матрице
             int iq = (iq1 << 1 ) + iq2;
@@ -172,13 +184,13 @@ complexd *TwoQubitsEvolution(complexd *a, int n, int q1, int q2, complexd u[4][4
         MPI_Sendrecv(a, vec_length * 2, MPI_DOUBLE, needrank, 0, vec11, vec_length * 2, MPI_DOUBLE, needrank, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
         #pragma omp parallel for
-        for (int i1 = 0; i1 < vec_length; i1++){
-
+        for(int i1 = 0; i1 < vec_length; i1++){
             int i = i1 + start;
             //Получение значений изменяемых битов
             int iq1 = (i & pow2q1) >> shift1;
             int iq2 = (i & pow2q2) >> shift2;
 
+            
             //Индекс в матрице
             int iq = (iq1 << 1 ) + iq2;
             b[i1] = u[iq][(0 << 1) + 0] * vec00[i1] + u[iq][( 0 << 1 ) + 1] * vec01[i1] + u[iq][( 1 << 1 ) + 0] * vec10[i1] + u[iq][( 1 << 1 ) + 1] * vec11[i1];

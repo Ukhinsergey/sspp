@@ -126,6 +126,10 @@ testC_rw: C_rw compare
 
 test: testhadamar testN_hadamar testNot testRw testC_not testC_rw
 
+
+lint: *.cpp
+	cpplint logic_gate.h
+
 clean : 
 	rm -f *.dat *.txt  *.svg print generate main random compare *.map totxt a.out *.bin tobin hadamar N_hadamar Not Rw C_not C_rw
 
