@@ -8,20 +8,24 @@ tobin: tobin.cpp
 totxt: totxt.cpp
 	g++ -o totxt totxt.cpp
 
-hadamar: hadamar.cpp
+hadamar: hadamar.cpp logic_gate.h
 	mpicxx -std=c++98 -o hadamar hadamar.cpp -fopenmp
 
-N_hadamar: N_hadamar.cpp
+N_hadamar: N_hadamar.cpp logic_gate.h
 	mpicxx -std=c++98 -o N_hadamar N_hadamar.cpp -fopenmp
 
-Not: Not.cpp
+Not: Not.cpp logic_gate.h
 	mpicxx -std=c++98 -o Not Not.cpp -fopenmp
 
-C_not: C_not.cpp
+C_not: C_not.cpp logic_gate.h
 	mpicxx -std=c++98 -o C_not C_not.cpp -fopenmp
 
-Rw: Rw.cpp
+Rw: Rw.cpp logic_gate.h
 	mpicxx -std=c++98 -o Rw Rw.cpp -fopenmp
+
+
+C_rw: C_rw.cpp logic_gate.h
+	mpicxx -std=c++98 -o C_rw C_rw.cpp -fopenmp
 
 compare: compare.cpp
 	g++ -o compare compare.cpp
@@ -103,11 +107,26 @@ testC_not: C_not compare
 	./compare test/C_not.bin C_not.bin
 	rm C_not.bin
 
-maketest: testhadamar testN_hadamar testNot testRw testC_not
+testC_rw: C_rw compare
+	mpirun -n 1 ./C_rw 6 1 6 2 1 C_rw.bin 3.1415
+	./compare test/C_rw.bin C_rw.bin
+	mpirun -n 2 ./C_rw 6 1 6 2 1 C_rw.bin 3.1415
+	./compare test/C_rw.bin C_rw.bin
+	mpirun -n 4 ./C_rw 6 1 6 2 1 C_rw.bin 3.1415
+	./compare test/C_rw.bin C_rw.bin
+	mpirun -n 4 ./C_rw 6 1 6 2 4 C_rw.bin 3.1415
+	./compare test/C_rw.bin C_rw.bin
+	mpirun -n 4 ./C_rw 6 1 6 2 8 C_rw.bin 3.1415
+	./compare test/C_rw.bin C_rw.bin
+	mpirun -n 8 ./C_rw 6 1 6 2 1 C_rw.bin 3.1415
+	./compare test/C_rw.bin C_rw.bin
+	mpirun -n 64 ./C_rw 6 1 6 2 1 C_rw.bin 3.1415
+	./compare test/C_rw.bin C_rw.bin
+	rm C_rw.bin
+
+test: testhadamar testN_hadamar testNot testRw testC_not testC_rw
 
 clean : 
-	rm -f *.dat *.txt  *.svg print generate main random compare *.map totxt a.out *.bin tobin hadamar N_hadamar Not Rw C_not
+	rm -f *.dat *.txt  *.svg print generate main random compare *.map totxt a.out *.bin tobin hadamar N_hadamar Not Rw C_not C_rw
 
-test: main totxt
-	mpirun -n 1 ./C_not 6 6 1 2 1 C_not.bin
-	./totxt out.bin out.txt
+

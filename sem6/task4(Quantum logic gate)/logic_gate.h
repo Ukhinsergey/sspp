@@ -59,6 +59,7 @@ complexd *TwoQubitsEvolution(complexd *a, int n, int q1, int q2, complexd u[4][4
     complexd *b = new complexd[vec_length];
 
     if (pow2q1 < vec_length && pow2q2 < vec_length) {
+        #pragma omp parallel for
         for (int i1 = 0; i1 < vec_length; i1++){
             //Установка изменяемых битов во все возможные позиции
             int i = i1 + start;
@@ -93,6 +94,7 @@ complexd *TwoQubitsEvolution(complexd *a, int n, int q1, int q2, complexd u[4][4
             vecq2_0 = temp;
             vecq2_1 = a;
         }
+        #pragma omp parallel for
         for (int i1 = 0; i1 < vec_length; i1++){
             //Установка изменяемых битов во все возможные позиции
             int i = i1 + start;
@@ -128,6 +130,7 @@ complexd *TwoQubitsEvolution(complexd *a, int n, int q1, int q2, complexd u[4][4
             vecq1_0 = temp;
             vecq1_1 = a;
         }
+        #pragma omp parallel for
         for (int i1 = 0; i1 < vec_length; i1++){
             //Установка изменяемых битов во все возможные позиции
             int i = i1 + start;
@@ -167,6 +170,8 @@ complexd *TwoQubitsEvolution(complexd *a, int n, int q1, int q2, complexd u[4][4
         needrank = value11 / vec_length;
         complexd *vec11 = new complexd[vec_length];
         MPI_Sendrecv(a, vec_length * 2, MPI_DOUBLE, needrank, 0, vec11, vec_length * 2, MPI_DOUBLE, needrank, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+
+        #pragma omp parallel for
         for (int i1 = 0; i1 < vec_length; i1++){
 
             int i = i1 + start;
@@ -230,5 +235,14 @@ complexd *C_not(complexd *a, int  n, int  q1, int q2, long powproc, int rank) {
     complexd u[4][4];
     u[0][0] = u[1][1] = u[2][3] = u[3][2] = 1;
     u[0][1] = u[0][2] = u[0][3] = u[1][0] = u[1][2] = u[1][3] = u[2][0] = u[2][1] = u[2][2] = u[3][0] = u[3][1] = u[3][3] = 0;
+    return TwoQubitsEvolution(a, n, q1, q2,u, powproc, rank);
+}
+
+
+complexd *C_rw(complexd *a, int  n, int  q1, int q2, long powproc, int rank, double phi) {
+    complexd u[4][4];
+    u[0][0] = u[1][1] = u[2][2] = 1;
+    u[0][1] = u[0][2] = u[0][3] = u[1][0] = u[1][2] = u[1][3] = u[2][0] = u[2][1] = u[2][3]= u[3][0] = u[3][1] = u[3][2] = 0;
+    u[3][3] = exp(complexd(0,1) * phi);
     return TwoQubitsEvolution(a, n, q1, q2,u, powproc, rank);
 }
