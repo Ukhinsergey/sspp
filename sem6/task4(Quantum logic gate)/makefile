@@ -133,4 +133,3 @@ lint: *.cpp
 clean : 
 	rm -f *.dat *.txt  *.svg print generate main random compare *.map totxt a.out *.bin tobin hadamar N_hadamar Not Rw C_not C_rw
 
-
