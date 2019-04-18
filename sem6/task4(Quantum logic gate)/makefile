@@ -1,3 +1,7 @@
+
+.PHONY: test
+
+
 main: main.cpp logic_gate.h
 	mpicxx -std=c++98 -o main main.cpp -fopenmp
 
