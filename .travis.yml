@@ -5,6 +5,7 @@ language: generic
 packages:
 - openmpi
 - cpplint
+- mpicxx
 script:
 - cd ./sem6/task4\(Quantum\ logic\ gate\) && make test
 
