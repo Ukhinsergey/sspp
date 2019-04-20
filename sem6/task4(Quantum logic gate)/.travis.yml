@@ -3,4 +3,5 @@ arch:
   packages:
   - openmpi
   - cpplint
-  script: make test
+  script: 
+  - make test
