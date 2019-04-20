@@ -2,13 +2,9 @@ sudo: required
 
 language: generic
 
-services:
-- docker
-
-arch:
-  packages:
-  - openmpi
-  - cpplint
-  script:
-  - cd ./sem6/task4(Quantum logic gate) && make test
+packages:
+- openmpi
+- cpplint
+script:
+- cd ./sem6/task4(Quantum logic gate) && make test
 
