@@ -35,92 +35,92 @@ compare: compare.cpp
 	g++ -o compare compare.cpp
 
 testhadamar: hadamar compare
-	mpirun -n 1 ./hadamar 6 1 1 2 1 hadamar.bin
+	mpirun --oversubscribe -n 1 ./hadamar 6 1 1 2 1 hadamar.bin
 	./compare test/hadamar.bin hadamar.bin
-	mpirun -n 2 ./hadamar 6 1 1 2 1 hadamar.bin
+	mpirun --oversubscribe -n 2 ./hadamar 6 1 1 2 1 hadamar.bin
 	./compare test/hadamar.bin hadamar.bin
-	mpirun -n 4 ./hadamar 6 1 1 2 1 hadamar.bin
+	mpirun --oversubscribe -n 4 ./hadamar 6 1 1 2 1 hadamar.bin
 	./compare test/hadamar.bin hadamar.bin
-	mpirun -n 4 ./hadamar 6 1 1 2 4 hadamar.bin
+	mpirun --oversubscribe -n 4 ./hadamar 6 1 1 2 4 hadamar.bin
 	./compare test/hadamar.bin hadamar.bin
-	mpirun -n 4 ./hadamar 6 1 1 2 8 hadamar.bin
+	mpirun --oversubscribe -n 4 ./hadamar 6 1 1 2 8 hadamar.bin
 	./compare test/hadamar.bin hadamar.bin
-	mpirun -n 8 ./hadamar 6 1 1 2 1 hadamar.bin
+	mpirun --oversubscribe -n 8 ./hadamar 6 1 1 2 1 hadamar.bin
 	./compare test/hadamar.bin hadamar.bin
 	rm hadamar.bin
 
 testN_hadamar: N_hadamar compare
-	mpirun -n 1 ./N_hadamar 6 1 1 2 1 N_hadamar.bin
+	mpirun --oversubscribe -n 1 ./N_hadamar 6 1 1 2 1 N_hadamar.bin
 	./compare test/N_hadamar.bin N_hadamar.bin
-	mpirun -n 2 ./N_hadamar 6 1 1 2 1 N_hadamar.bin
+	mpirun --oversubscribe -n 2 ./N_hadamar 6 1 1 2 1 N_hadamar.bin
 	./compare test/N_hadamar.bin N_hadamar.bin
-	mpirun -n 4 ./N_hadamar 6 1 1 2 1 N_hadamar.bin
+	mpirun --oversubscribe -n 4 ./N_hadamar 6 1 1 2 1 N_hadamar.bin
 	./compare test/N_hadamar.bin N_hadamar.bin
-	mpirun -n 4 ./N_hadamar 6 1 1 2 4 N_hadamar.bin
+	mpirun --oversubscribe -n 4 ./N_hadamar 6 1 1 2 4 N_hadamar.bin
 	./compare test/N_hadamar.bin N_hadamar.bin	
-	mpirun -n 4 ./N_hadamar 6 1 1 2 8 N_hadamar.bin
+	mpirun --oversubscribe -n 4 ./N_hadamar 6 1 1 2 8 N_hadamar.bin
 	./compare test/N_hadamar.bin N_hadamar.bin
-	mpirun -n 8 ./N_hadamar 6 1 1 2 1 N_hadamar.bin
+	mpirun --oversubscribe -n 8 ./N_hadamar 6 1 1 2 1 N_hadamar.bin
 	./compare test/N_hadamar.bin N_hadamar.bin
 	rm N_hadamar.bin
 
 testNot: Not compare
-	mpirun -n 1 ./Not 6 1 1 2 1 Not.bin
+	mpirun --oversubscribe -n 1 ./Not 6 1 1 2 1 Not.bin
 	./compare test/Not.bin Not.bin
-	mpirun -n 2 ./Not 6 1 1 2 1 Not.bin
+	mpirun --oversubscribe -n 2 ./Not 6 1 1 2 1 Not.bin
 	./compare test/Not.bin Not.bin
-	mpirun -n 4 ./Not 6 1 1 2 1 Not.bin
+	mpirun --oversubscribe -n 4 ./Not 6 1 1 2 1 Not.bin
 	./compare test/Not.bin Not.bin
-	mpirun -n 4 ./Not 6 1 1 2 4 Not.bin
+	mpirun --oversubscribe -n 4 ./Not 6 1 1 2 4 Not.bin
 	./compare test/Not.bin Not.bin
-	mpirun -n 4 ./Not 6 1 1 2 8 Not.bin
+	mpirun --oversubscribe -n 4 ./Not 6 1 1 2 8 Not.bin
 	./compare test/Not.bin Not.bin
-	mpirun -n 8 ./Not 6 1 1 2 1 Not.bin
+	mpirun --oversubscribe -n 8 ./Not 6 1 1 2 1 Not.bin
 	./compare test/Not.bin Not.bin
 	rm Not.bin
 
 testRw: Rw compare
-	mpirun -n 1 ./Rw 6 1 1 2 1 Rw.bin 3.1415
+	mpirun --oversubscribe -n 1 ./Rw 6 1 1 2 1 Rw.bin 3.1415
 	./compare test/Rw.bin Rw.bin
-	mpirun -n 2 ./Rw 6 1 1 2 1 Rw.bin 3.1415
+	mpirun --oversubscribe -n 2 ./Rw 6 1 1 2 1 Rw.bin 3.1415
 	./compare test/Rw.bin Rw.bin
-	mpirun -n 4 ./Rw 6 1 1 2 1 Rw.bin 3.1415
+	mpirun --oversubscribe -n 4 ./Rw 6 1 1 2 1 Rw.bin 3.1415
 	./compare test/Rw.bin Rw.bin
-	mpirun -n 4 ./Rw 6 1 1 2 4 Rw.bin 3.1415
+	mpirun --oversubscribe -n 4 ./Rw 6 1 1 2 4 Rw.bin 3.1415
 	./compare test/Rw.bin Rw.bin
-	mpirun -n 4 ./Rw 6 1 1 2 8 Rw.bin 3.1415
+	mpirun --oversubscribe -n 4 ./Rw 6 1 1 2 8 Rw.bin 3.1415
 	./compare test/Rw.bin Rw.bin
-	mpirun -n 8 ./Rw 6 1 1 2 1 Rw.bin 3.1415
+	mpirun --oversubscribe -n 8 ./Rw 6 1 1 2 1 Rw.bin 3.1415
 	./compare test/Rw.bin Rw.bin
 	rm Rw.bin
 
 testC_not: C_not compare
-	mpirun -n 1 ./C_not 6 6 1  2 1 C_not.bin
+	mpirun --oversubscribe -n 1 ./C_not 6 6 1  2 1 C_not.bin
 	./compare test/C_not.bin C_not.bin
-	mpirun -n 2 ./C_not 6 6 1  2 1 C_not.bin
+	mpirun --oversubscribe -n 2 ./C_not 6 6 1  2 1 C_not.bin
 	./compare test/C_not.bin C_not.bin
-	mpirun -n 4 ./C_not 6 6 1  2 1 C_not.bin
+	mpirun --oversubscribe -n 4 ./C_not 6 6 1  2 1 C_not.bin
 	./compare test/C_not.bin C_not.bin
-	mpirun -n 4 ./C_not 6 6 1  2 4 C_not.bin
+	mpirun --oversubscribe -n 4 ./C_not 6 6 1  2 4 C_not.bin
 	./compare test/C_not.bin C_not.bin
-	mpirun -n 4 ./C_not 6 6 1 2 8 C_not.bin
+	mpirun --oversubscribe -n 4 ./C_not 6 6 1 2 8 C_not.bin
 	./compare test/C_not.bin C_not.bin
-	mpirun -n 8 ./C_not 6 6 1  2 1 C_not.bin
+	mpirun --oversubscribe -n 8 ./C_not 6 6 1  2 1 C_not.bin
 	./compare test/C_not.bin C_not.bin
 	rm C_not.bin
 
 testC_rw: C_rw compare
-	mpirun -n 1 ./C_rw 6 1 6 2 1 C_rw.bin 3.1415
+	mpirun --oversubscribe -n 1 ./C_rw 6 1 6 2 1 C_rw.bin 3.1415
 	./compare test/C_rw.bin C_rw.bin
-	mpirun -n 2 ./C_rw 6 1 6 2 1 C_rw.bin 3.1415
+	mpirun --oversubscribe -n 2 ./C_rw 6 1 6 2 1 C_rw.bin 3.1415
 	./compare test/C_rw.bin C_rw.bin
-	mpirun -n 4 ./C_rw 6 1 6 2 1 C_rw.bin 3.1415
+	mpirun --oversubscribe -n 4 ./C_rw 6 1 6 2 1 C_rw.bin 3.1415
 	./compare test/C_rw.bin C_rw.bin
-	mpirun -n 4 ./C_rw 6 1 6 2 4 C_rw.bin 3.1415
+	mpirun --oversubscribe -n 4 ./C_rw 6 1 6 2 4 C_rw.bin 3.1415
 	./compare test/C_rw.bin C_rw.bin
-	mpirun -n 4 ./C_rw 6 1 6 2 8 C_rw.bin 3.1415
+	mpirun --oversubscribe -n 4 ./C_rw 6 1 6 2 8 C_rw.bin 3.1415
 	./compare test/C_rw.bin C_rw.bin
-	mpirun -n 8 ./C_rw 6 1 6 2 1 C_rw.bin 3.1415
+	mpirun --oversubscribe -n 8 ./C_rw 6 1 6 2 1 C_rw.bin 3.1415
 	./compare test/C_rw.bin C_rw.bin
 	rm C_rw.bin
 
