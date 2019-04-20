@@ -2,10 +2,18 @@ sudo: required
 
 language: generic
 
-packages:
-- openmpi
-- cpplint
-- mpicxx
+services:
+- docker
+
+arch:
+  packages:
+  - openmpi
+  - cpplint
+  script:
+  - cd ./sem6/task4\(Quantum\ logic\ gate\) && make test
+
 script:
-- cd ./sem6/task4\(Quantum\ logic\ gate\) && make test
+  - "curl -s https://raw.githubusercontent.com/mikkeloscar/arch-travis/master/arch-travis.sh | bash"
+
+
 
