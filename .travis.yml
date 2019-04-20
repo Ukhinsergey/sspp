@@ -6,5 +6,5 @@ packages:
 - openmpi
 - cpplint
 script:
-- cd ./sem6/task4(Quantum logic gate) && make test
+- cd ./sem6/task4\(Quantum\ logic\ gate\) && make test
 
