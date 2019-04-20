@@ -13,7 +13,7 @@ totxt: totxt.cpp
 	g++ -o totxt totxt.cpp
 
 hadamar: hadamar.cpp logic_gate.h
-	mpicxx -std=c++98 -o hadamar hadamar.cpp -fopenmp
+	mpicxx -std=c++98 -o hadamar hadamar.cpp -fopenmp 
 
 N_hadamar: N_hadamar.cpp logic_gate.h
 	mpicxx -std=c++98 -o N_hadamar N_hadamar.cpp -fopenmp
@@ -57,7 +57,7 @@ testN_hadamar: N_hadamar compare
 	mpirun -n 4 ./N_hadamar 6 1 1 2 1 N_hadamar.bin
 	./compare test/N_hadamar.bin N_hadamar.bin
 	mpirun -n 4 ./N_hadamar 6 1 1 2 4 N_hadamar.bin
-	./compare test/N_hadamar.bin N_hadamar.bin
+	./compare test/N_hadamar.bin N_hadamar.bin	
 	mpirun -n 4 ./N_hadamar 6 1 1 2 8 N_hadamar.bin
 	./compare test/N_hadamar.bin N_hadamar.bin
 	mpirun -n 8 ./N_hadamar 6 1 1 2 1 N_hadamar.bin
@@ -107,8 +107,6 @@ testC_not: C_not compare
 	./compare test/C_not.bin C_not.bin
 	mpirun -n 8 ./C_not 6 6 1  2 1 C_not.bin
 	./compare test/C_not.bin C_not.bin
-	mpirun -n 64 ./C_not 6 6 1  2 1 C_not.bin
-	./compare test/C_not.bin C_not.bin
 	rm C_not.bin
 
 testC_rw: C_rw compare
@@ -123,8 +121,6 @@ testC_rw: C_rw compare
 	mpirun -n 4 ./C_rw 6 1 6 2 8 C_rw.bin 3.1415
 	./compare test/C_rw.bin C_rw.bin
 	mpirun -n 8 ./C_rw 6 1 6 2 1 C_rw.bin 3.1415
-	./compare test/C_rw.bin C_rw.bin
-	mpirun -n 64 ./C_rw 6 1 6 2 1 C_rw.bin 3.1415
 	./compare test/C_rw.bin C_rw.bin
 	rm C_rw.bin
 

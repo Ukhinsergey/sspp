@@ -1,6 +1,6 @@
 #include <omp.h>
 #include <complex>
-#include "mpi.h"
+#include <mpi.h>
 #ifndef SEM6_TASK4_QUANTUM_LOGIC_GATE__LOGIC_GATE_H_
 #define SEM6_TASK4_QUANTUM_LOGIC_GATE__LOGIC_GATE_H_
 #endif   //  SEM6_TASK4_QUANTUM_LOGIC_GATE__LOGIC_GATE_H_
@@ -97,7 +97,7 @@ complexd *TwoQubitsEvolution(complexd *a, int n, int q1, int q2,
             a[i01] + u[iq][(1 << 1) + 0] * a[i10] + u[iq][(1 << 1) + 1] *
             a[i11];
         }
-    return b;
+        return b;
     } else if (pow2q1 < vec_length && pow2q2 >= vec_length) {
         int needrank;
         if ((start & pow2q2) == 0) {  // look at the bit that need to change
