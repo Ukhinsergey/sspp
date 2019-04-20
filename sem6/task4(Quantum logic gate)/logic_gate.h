@@ -1,6 +1,6 @@
 #include <omp.h>
-#include <complex>
 #include <mpi.h>
+#include <complex>
 #ifndef SEM6_TASK4_QUANTUM_LOGIC_GATE__LOGIC_GATE_H_
 #define SEM6_TASK4_QUANTUM_LOGIC_GATE__LOGIC_GATE_H_
 #endif   //  SEM6_TASK4_QUANTUM_LOGIC_GATE__LOGIC_GATE_H_
@@ -63,12 +63,12 @@ complexd *TwoQubitsEvolution(complexd *a, int n, int q1, int q2,
 
 
     //  Все биты нулевые, за исключением
-    //соответсвующего номеру первого изменяемого кубита
+    //  соответсвующего номеру первого изменяемого кубита
     int pow2q1 = 1 << (shift1);
 
 
     //  Все биты нулевые, за исключением
-    //соответсвующего номеру второгоизменяемого кубита
+    //  соответсвующего номеру второгоизменяемого кубита
     int pow2q2 = 1 << (shift2);
 
     long vec_length = 1 << (n - powproc);
