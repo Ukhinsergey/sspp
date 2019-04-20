@@ -1,2 +1,6 @@
 language: cpp
-script: make test
+arch:
+  packages:
+  - openmpi
+  - cpplint
+  script: make test
