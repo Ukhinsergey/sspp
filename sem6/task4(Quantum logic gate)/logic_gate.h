@@ -8,7 +8,7 @@
 
 typedef std::complex<double> complexd;
 
-complexd *qubit_transform(complexd *a, int  n, complexd u[2][2], int  k,
+complexd *qubit_transform (complexd *a, int  n, complexd u[2][2], int  k,
     int powproc, int rank) {
 
     long vec_length = 1 << (n - powproc);
@@ -154,14 +154,14 @@ complexd *TwoQubitsEvolution(complexd *a, int n, int q1, int q2,
             MPI_STATUS_IGNORE);
         complexd *vecq1_0, *vecq1_1;
         if (rank < needrank) {  // bit needs to be changed in a == 0
-            vecq1_0 = a;
+              vecq1_0 = a;
             vecq1_1 = temp;
         } else {               //   bit needs to be changed in temp == 0
             vecq1_0 = temp;
             vecq1_1 = a;
         }
         #pragma omp parallel for
-        for (int i1 = 0; i1 < vec_length; i1++) {
+        for(int i1 = 0; i1 < vec_length; i1++) {
             //  Установка изменяемых битов во все возможные позиции
             int i = i1 + start;
             int i00 = (i & ~pow2q2) - start;
@@ -183,7 +183,8 @@ complexd *TwoQubitsEvolution(complexd *a, int n, int q1, int q2,
         }
         delete []temp;
         return b;
-    } else if (pow2q1 >= vec_length && pow2q2 >= vec_length) {
+    } else
+        if (pow2q1>=vec_length && pow2q2 >= vec_length) {
         int needrank;
         int value00 = start & ~pow2q1 & ~pow2q2;
         needrank = value00 / vec_length;
@@ -241,11 +242,11 @@ complexd *Hadamar(complexd *a, int  n, int  k, int powproc, int rank) {
     return qubit_transform(a, n, u, k, powproc, rank);
 }
 
-complexd *N_hadamar(complexd *a, int  n, int powproc, int rank) {
+complexd *N_hadamar (complexd *a, int  n, int powproc, int rank) {
     complexd u[2][2];
     u[0][0] = u[0][1] = u[1][0] = 1.0 / sqrt(2.0);
     u[1][1] = -u[0][0];
-    complexd *temp = qubit_transform(a, n, u, 1, powproc, rank);
+    complexd *temp = qubit_transform (a, n, u, 1, powproc, rank);
     complexd *b;
     for (int i = 2 ; i <= n; ++i) {
         b = qubit_transform(temp, n, u, i, powproc, rank);
