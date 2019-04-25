@@ -42,7 +42,7 @@ complexd *qubit_transform(complexd *a, int  n, complexd u[2][2], int  k,
         } else {               //   bit needs to be changed in temp == 0
             vec0 = temp;
             vec1 = a;
-        } 
+        }
         #pragma omp parallel for
         for (int i = 0; i < vec_length; ++i) {
             b[i] = u[((i + start) & dist) >> (n - k)][0] * vec0[i] +
