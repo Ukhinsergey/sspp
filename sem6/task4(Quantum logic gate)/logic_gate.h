@@ -18,10 +18,10 @@ complexd *qubit_transform(complexd *a, int  n, complexd u[2][2], int  k,
     if (dist < vec_length) {
         #pragma omp parallel for
         for (int i = 0; i < vec_length; ++i) {
-            b[i] = u[((i) & dist) >> (n - k)][0] *
+            b[i] = u[((i + start) & dist) >> (n - k)][0] *
             a[(((i + start) | dist) ^ dist) - start] +
             u[((i + start) & dist) >> (n - k)][1] * a[ ((i + start) | dist) -
-                start] + complexd(2);
+                start];
         }
     } else {
         int needrank;
@@ -42,7 +42,7 @@ complexd *qubit_transform(complexd *a, int  n, complexd u[2][2], int  k,
         } else {               //   bit needs to be changed in temp == 0
             vec0 = temp;
             vec1 = a;
-        }
+        } 
         #pragma omp parallel for
         for (int i = 0; i < vec_length; ++i) {
             b[i] = u[((i + start) & dist) >> (n - k)][0] * vec0[i] +
@@ -232,6 +232,7 @@ complexd *TwoQubitsEvolution(complexd *a, int n, int q1, int q2,
         delete []vec11;
         return b;
     }
+    return 0;
 }
 
 complexd *Hadamar(complexd *a, int  n, int  k, int powproc, int rank) {
