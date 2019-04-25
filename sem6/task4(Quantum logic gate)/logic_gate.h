@@ -45,8 +45,8 @@ complexd *qubit_transform(complexd *a, int  n, complexd u[2][2], int  k,
         }
         #pragma omp parallel for
         for (int i = 0; i < vec_length; ++i) {
-            b[i] = u[((i + start) & dist) >> (n - k)][0] * vec0[i] +
-            u[((i + start) & dist) >> (n - k)][1] * vec1[i];
+            b[i] = u[((i + start) & dist) >> (n - k)][1] * vec0[i] +
+            u[((i + start) & dist) >> (n - k)][0] * vec1[i];
         }
         delete []temp;
     }
