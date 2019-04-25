@@ -18,10 +18,10 @@ complexd *qubit_transform(complexd *a, int  n, complexd u[2][2], int  k,
     if (dist < vec_length) {
         #pragma omp parallel for
         for (int i = 0; i < vec_length; ++i) {
-            b[i] = u[((i + start) & dist) >> (n - k)][0] *
+            b[i] = u[((i) & dist) >> (n - k)][0] *
             a[(((i + start) | dist) ^ dist) - start] +
             u[((i + start) & dist) >> (n - k)][1] * a[ ((i + start) | dist) -
-                start];
+                start] + complexd(2);
         }
     } else {
         int needrank;
