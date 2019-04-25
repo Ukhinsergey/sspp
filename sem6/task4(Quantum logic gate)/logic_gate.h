@@ -177,7 +177,7 @@ complexd *TwoQubitsEvolution(complexd *a, int n, int q1, int q2,
 
             //  Индекс в матрице
             int iq = (iq1 << 1) + iq2;
-            b[i1] = u[iq][(0 << 1) + 0] * vecq1_0[i00] + u[iq][(0 << 1) + 1] *
+            b[i1] = u[iq][(0 << 1) + 0] * vecq1_0[i01] + u[iq][(0 << 1) + 1] *
             vecq1_0[i01] + u[iq][(1 << 1) + 0] * vecq1_1[i10] +
             u[iq][(1 << 1) + 1] * vecq1_1[i11];
         }
