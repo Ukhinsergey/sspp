@@ -10,7 +10,7 @@ arch:
   - openmpi
   - cpplint
   script:
-  - cd ./sem6/task4\(Quantum\ logic\ gate\) && make test
+  - cd ./sem6/task4\(Quantum\ logic\ gate\) && make test && make lint
 
 script:
   - "curl -s https://raw.githubusercontent.com/mikkeloscar/arch-travis/master/arch-travis.sh | bash"
