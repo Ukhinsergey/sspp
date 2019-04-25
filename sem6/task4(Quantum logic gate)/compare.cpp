@@ -23,7 +23,7 @@ int main(int argc, char **argv) {
         cout << "false 0" << endl;
         fin1.close();
         fin2.close();
-        return 0;
+        return -1;
     }
     int n = n1;
     long vec_length = 1 << n;
@@ -39,7 +39,7 @@ int main(int argc, char **argv) {
             << ' ' << re2 << ' ' << im2 << ' ' << endl;
             fin1.close();
             fin2.close();
-            return 0;
+            return -1;
         }
     }
     cout << "True" << endl;
